@@ -228,11 +228,16 @@ function ManageSearchEngine() {
 function ManageButtons() {
     const filter = document.querySelector(".filter-button");
 
-    const FLTER = new FilterContainer();
+    const FLTER = new FilterContainer({}, { table: "attendance_groups", id: "attendance_group_id", control: "ATTENDANCE_GROUP_CONTROL"});
 
     FLTER.Create().then(() => FLTER.Hide());
 
     FLTER.Load("ATTENDANCE_GROUP_TABLE_HEADER_TEXT", "ATTENDANCE_GROUP_BODY_KEY")
+
+    FLTER.AddListeners({onFilter: function (data) {
+        console.log(data)
+        // UpdateTable(data)
+    }});
 
     filter.addEventListener("click", function () {
         FLTER.Show();

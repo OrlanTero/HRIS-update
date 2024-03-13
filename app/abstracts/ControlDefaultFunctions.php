@@ -53,6 +53,29 @@ abstract class ControlDefaultFunctions
         return new Response($insert ? 200 : 204, $insert ? "Data Successfully Inserted" : "Activity has an error", ['id' => $insert]);
     }
 
+    public function filterTableRecord($data)
+    {
+        $dateData = $data['dateData'];
+        $columnData = $data['columnData'];
+        $limitData = $data['limitData'];
+
+        $filter = [];
+
+        if (!empty($dateData['fromDate']) && !empty($dateData['toDate'])) {
+//            array_push($filter, [])
+        }
+
+        if (count($columnData) > 0) {
+            foreach ($columnData as $column) {
+                if (!empty($column['column'])) {
+                    $filter[] = $column;
+                }
+            }
+        }
+
+        return $this->CONNECTION->FilterMultiConditionBetweenDates($this->TABLE_NAME, $filter, $dateData,  $limitData,true);
+    }
+
     public function addRecordRemoveIfExist($activity)
     {
         $already = $this->alreadyExists($activity);

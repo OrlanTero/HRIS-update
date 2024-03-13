@@ -51,8 +51,12 @@ class PostControl
         global ${$header}, ${$body};
 
         return [
-            "header" => ${$header},
-            "body" => ${$body}
+            "header" => array_map(function($a) {
+                return strtolower($a) === "no" ? "ID" : $a;
+            }, ${$header}),
+            "body" => array_map(function($a) {
+                return is_array($a) ? $a['primary'] : (strtolower($a) === "no" ? "id" : $a);
+            }, ${$body}),
         ];
     }
 

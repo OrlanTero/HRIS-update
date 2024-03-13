@@ -1598,9 +1598,41 @@ table.has-check-box th:first-child, table.has-check-box td:first-child {
 .group-control .group-item .main-content {
   padding: 10px;
 }
+.group-control .group-item .main-content .custom-combo-box {
+  height: 50px !important;
+}
 .group-control .group-item .three-input-container {
+  position: relative;
+}
+.group-control .group-item .three-input-container .main-inputs {
   display: flex;
   align-items: center;
+}
+.group-control .group-item .three-input-container .input-button {
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 20px;
+  min-height: 20px;
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 999;
+}
+.group-control .group-item .three-input-container .input-button .icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.group-control .group-item .three-input-container .input-button .icon svg {
+  width: 14px;
+  height: 14px;
 }
 .group-control .group-item .three-input-container .input-item {
   margin: 2px;

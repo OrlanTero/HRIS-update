@@ -114,6 +114,25 @@ class Connection
         return $fetchAll ? $stmt->fetchAll() : $stmt->fetch();
     }
 
+    public function FilterMultiConditionBetweenDates($table, $condition, $betweenDates, $limitData, $fetchAll)
+    {
+
+        $hasFilterDate = !empty($betweenDates['fromDate']) && !empty($betweenDates['toDate']);
+
+        $bs = $hasFilterDate ? " " . ($betweenDates['column'] === 'default' ? 'date_created' : $betweenDates['column']) . " BETWEEN('".$betweenDates['fromDate']."', '".$betweenDates['toDate']."') " : "";
+
+        $w = $this->MultiConditionToQ($condition, " AND ");
+
+        return $w;
+//        $w = empty($condition) ? "" : " WHERE " . $w;
+//        $l = $limit ? "LIMIT " . $limit : "";
+//        $query = implode(" ", array("SELECT * FROM ", $table . $w, $order, $l));
+//        $stmt = $this->CONNECTION->prepare($query);
+//        $stmt->execute();
+//
+//        return $fetchAll ? $stmt->fetchAll() : $stmt->fetch();
+    }
+
     public function MultiConditionToQOption($options): string
     {
         return implode(" OR ", array_map(function ($option) {

@@ -330,9 +330,37 @@
 
     .main-content
       padding: 10px
+      .custom-combo-box
+        height: 50px !important
     .three-input-container
-      display: flex
-      align-items: center
+      position: relative
+
+      .main-inputs
+        display: flex
+        align-items: center
+      .input-button
+        border-radius: 50%
+        background: #ffffff
+        box-shadow: $global_boxshadow
+        cursor: pointer
+        display: flex
+        justify-content: center
+        align-items: center
+        min-width: 20px
+        min-height: 20px
+        width: 20px
+        height: 20px
+        position: absolute
+        top: 0
+        right: 0
+        z-index: 999
+        .icon
+          display: flex
+          justify-content: center
+          align-items: center
+          svg
+            width: 14px
+            height: 14px
       .input-item
         margin: 2px
         .custom-combo-box

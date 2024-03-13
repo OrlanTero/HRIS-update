@@ -3,8 +3,8 @@ import {
     CreateElement,
     DisableScroll,
     EnableScroll,
-    ExecuteFn,
-    HideShowComponent, SetNewComboItems,
+    ExecuteFn, GetComboValue,
+    HideShowComponent, ManageComboBoxes, SetNewComboItems,
     ToData
 } from "../../modules/component/Tool.js";
 import {CONTAINERS} from "../../modules/app/Application.js";
@@ -18,11 +18,14 @@ export  class FilterContainer {
         this.ELEMENT = null;
         this.LISTENERS = {};
         this.COLUMNS = [];
+        this.COLUMNINFO = null;
     }
 
     async Load(header, body) {
         this.COLUMNS = await GetColumnsTable(header, body);
+        this.COLUMNINFO = {header, body};
 
+        console.log(this.COLUMNS)
         this.PlaceDatas();
     }
 
@@ -108,9 +111,7 @@ export  class FilterContainer {
             const background = this.ELEMENT.querySelector(".popup-background");
             const closeBtn = this.ELEMENT.querySelector(".close-popup");
 
-            const yesBtn = this.ELEMENT.querySelector(".yes-btn");
-            const noBtn = this.ELEMENT.querySelector(".no-btn");
-            const cancelBtn = this.ELEMENT.querySelector(".cancel-btn");
+            const submit = this.ELEMENT.querySelector("input[type=submit]");
 
             const newFilterCol = this.ELEMENT.querySelector(".add-new-filter-column");
 
@@ -126,31 +127,15 @@ export  class FilterContainer {
 
             if (closeBtn) {
                 closeBtn.addEventListener("click", () => {
-                    this.Remove();
+                    this.Hide();
                 });
             }
+            
+            if (submit) {
+                submit.addEventListener("click", function (e) {
+                    e.preventDefault();
 
-            if (yesBtn) {
-                yesBtn.addEventListener("click", () => {
-                    ExecuteFn(this.LISTENERS, "onYes");
-
-                    this.Remove();
-                });
-            }
-
-            if (noBtn) {
-                noBtn.addEventListener("click", () => {
-                    ExecuteFn(this.LISTENERS, "onNo");
-
-                    this.Remove();
-                });
-            }
-
-            if (cancelBtn) {
-                cancelBtn.addEventListener("click", () => {
-                    ExecuteFn(this.LISTENERS, "onCancel");
-
-                    this.Remove();
+                    main.SubmitFilter();
                 });
             }
 
@@ -158,6 +143,53 @@ export  class FilterContainer {
                 main.CreateNewFilterColumn();
             })
         }
+    }
+
+    SubmitFilter() {
+        const colChckbox = this.ELEMENT.querySelector("input[type=checkbox]");
+        const fromDate = this.ELEMENT.querySelector("input[name=from_date]");
+        const toDate = this.ELEMENT.querySelector("input[name=to_date]");
+        const colDate = this.ELEMENT.querySelector("input[name=date_column]");
+
+        const filterCol = this.ELEMENT.querySelector(".filter-column");
+
+        const limit = this.ELEMENT.querySelector("input[name=limit]");
+        const order = this.ELEMENT.querySelector("input[name=order]");
+
+        const dateData = {
+            fromDate: fromDate.value,
+            toDate: toDate.value,
+            column: colChckbox.checked ? colDate.value : 'default'
+        }
+
+        const columnData = [...filterCol.querySelectorAll(".three-input-container")].map((item) => {
+            const combo = item.querySelector(".custom-combo-box");
+            const operator = item.querySelector("input[name=operator]").value;
+            const value = item.querySelector("input[name=value]").value;
+            const column = GetComboValue(combo).value;
+
+            return { column, value, operator };
+        });
+
+        const limitData = {
+            limit: limit.value,
+            order: order.value
+        }
+
+        const data = {dateData, columnData, limitData};
+
+        console.log(data)
+        return new Promise((resolve,reject) => {
+            Ajax({
+                url: `/components/popup/system/filterTable`,
+                type: "POST",
+                data: {data: JSON.stringify(data), options: JSON.stringify(this.OPTIONS), tableData: JSON.stringify(this.COLUMNINFO)},
+                success: (data) => {
+                    ExecuteFn(this.LISTENERS, "onFilter", data);
+                    resolve(data);
+                },
+            });
+        })
     }
 
     async CreateNewFilterColumn() {
@@ -183,8 +215,6 @@ export  class FilterContainer {
             parent.append(fragment);
 
             this.PlaceDatas();
-
-
         })
 
     }
@@ -219,16 +249,26 @@ export  class FilterContainer {
 
     PlaceDatas() {
         // place filter by columns
-
         const threeInput = this.ELEMENT.querySelectorAll(".filter-column .three-input-container");
+
+        // FILTER DATES
+        const filterDates = this.ELEMENT.querySelector(".filter-dates");
+
+        const colChckbox = filterDates.querySelector("input[type=checkbox]");
+        const colItem = filterDates.querySelector(".col-item");
+
+        colChckbox.addEventListener("change", function () {
+           HideShowComponent(colItem, colChckbox.checked, false);
+        })
 
 
         for (const TI of threeInput) {
             const combo = TI.querySelector(".custom-combo-box");
             const operator = TI.querySelector("input[name=operator]");
             const value = TI.querySelector("input[name=value]");
+            const closeBtn = TI.querySelector(".close-btn-item");
 
-            SetNewComboItems(combo, this.COLUMNS.header);
+            SetNewComboItems(combo, {text: this.COLUMNS.header, value: this.COLUMNS.body});
             
             operator.addEventListener("change", function () {
                 const validOperators = ["==", "===", "<=", ">=", ">", "<"];
@@ -237,9 +277,16 @@ export  class FilterContainer {
                 if (!isValid) {
                     operator.value = "==";
                 }
+            });
+
+            closeBtn.addEventListener("click", function () {
+                TI.remove()
             })
 
         }
+
+        ManageComboBoxes();
+
     }
 }
 

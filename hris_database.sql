@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.1.1
+-- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 25, 2024 at 06:17 PM
--- Server version: 10.4.22-MariaDB
--- PHP Version: 7.3.33
+-- Generation Time: Mar 13, 2024 at 10:22 AM
+-- Server version: 10.4.27-MariaDB
+-- PHP Version: 8.1.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -35,7 +35,7 @@ CREATE TABLE `attendance` (
   `day` int(11) NOT NULL,
   `hours` int(11) NOT NULL,
   `date_created` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `attendance`
@@ -144,7 +144,23 @@ INSERT INTO `attendance` (`attendance_id`, `attendance_group_id`, `employee_id`,
 (100, 3, 4, 7, 28, 0, '2024-02-23 11:26:22'),
 (101, 3, 4, 7, 29, 0, '2024-02-23 11:26:22'),
 (102, 3, 4, 7, 30, 0, '2024-02-23 11:26:22'),
-(103, 3, 9, 1, 18, 1, '2024-02-23 11:26:22');
+(103, 3, 9, 1, 18, 1, '2024-02-23 11:26:22'),
+(104, 4, 7, 1, 20, 6, '2024-03-06 11:41:24'),
+(105, 4, 7, 4, 21, 6, '2024-03-06 11:41:24'),
+(106, 4, 9, 4, 19, 6, '2024-03-06 11:41:24'),
+(107, 4, 7, 1, 20, 6, '2024-03-11 12:32:17'),
+(108, 4, 7, 2, 23, 1, '2024-03-11 12:32:17'),
+(109, 4, 7, 4, 21, 6, '2024-03-11 12:32:17'),
+(110, 4, 7, 1, 20, 6, '2024-03-11 12:34:30'),
+(111, 4, 7, 2, 23, 1, '2024-03-11 12:34:31'),
+(112, 4, 7, 2, 25, 2, '2024-03-11 12:34:31'),
+(113, 4, 7, 4, 21, 6, '2024-03-11 12:34:31'),
+(114, 4, 7, 0, 24, 1, '2024-03-11 12:35:51'),
+(115, 4, 7, 0, 25, 2, '2024-03-11 12:35:51'),
+(116, 4, 7, 1, 20, 6, '2024-03-11 12:35:52'),
+(117, 4, 7, 2, 23, 1, '2024-03-11 12:35:52'),
+(118, 4, 7, 2, 25, 2, '2024-03-11 12:35:52'),
+(119, 4, 7, 4, 21, 6, '2024-03-11 12:35:52');
 
 -- --------------------------------------------------------
 
@@ -160,7 +176,7 @@ CREATE TABLE `attendance_groups` (
   `active` int(11) NOT NULL,
   `finished` int(11) NOT NULL,
   `date_created` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `attendance_groups`
@@ -168,8 +184,7 @@ CREATE TABLE `attendance_groups` (
 
 INSERT INTO `attendance_groups` (`attendance_group_id`, `period`, `year`, `client_id`, `active`, `finished`, `date_created`) VALUES
 (1, 'January 1 to 15', '1990', 1, 0, 0, '2024-02-21 06:30:32'),
-(2, 'February 16 to 29', '2024', 1, 0, 0, '2024-02-21 08:14:19'),
-(3, 'January 16 to 31', '1991', 1, 0, 0, '2024-02-21 22:43:49');
+(4, 'April 16 to 30', '2024', 2, 0, 0, '2024-03-06 11:40:24');
 
 -- --------------------------------------------------------
 
@@ -182,7 +197,7 @@ CREATE TABLE `banks` (
   `name` varchar(100) NOT NULL,
   `branch` varchar(100) NOT NULL,
   `date_created` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `banks`
@@ -200,19 +215,19 @@ INSERT INTO `banks` (`bank_id`, `name`, `branch`, `date_created`) VALUES
 CREATE TABLE `bank_accounts` (
   `bank_account_id` int(11) NOT NULL,
   `employee_id` int(11) NOT NULL,
-  `bank` varchar(100) NOT NULL,
+  `bank_id` int(11) NOT NULL,
   `account_number` varchar(100) NOT NULL,
   `active` int(11) NOT NULL,
   `date_created` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `bank_accounts`
 --
 
-INSERT INTO `bank_accounts` (`bank_account_id`, `employee_id`, `bank`, `account_number`, `active`, `date_created`) VALUES
-(1, 6, 'Hatdog', '23', 0, '2024-02-07 08:52:58'),
-(2, 7, 'Ban4', '1235', 0, '2024-02-12 10:00:47');
+INSERT INTO `bank_accounts` (`bank_account_id`, `employee_id`, `bank_id`, `account_number`, `active`, `date_created`) VALUES
+(5, 7, 1, '1234', 0, '2024-03-11 04:43:21'),
+(6, 4, 1, '12', 0, '2024-03-11 12:36:15');
 
 -- --------------------------------------------------------
 
@@ -227,19 +242,15 @@ CREATE TABLE `beneficiaries` (
   `type` varchar(200) NOT NULL,
   `name` varchar(200) NOT NULL,
   `date_created` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `beneficiaries`
 --
 
 INSERT INTO `beneficiaries` (`beneficiary_id`, `mortuary_id`, `employee_id`, `type`, `name`, `date_created`) VALUES
-(1, 3, 4, 'B', '23', '2024-02-12 06:25:26'),
-(2, 4, 4, 'B', 'Alpha De Mary hugas', '2024-02-12 07:23:15'),
-(3, -1, 7, 'A', 'Jean Dee', '2024-02-15 04:02:12'),
-(4, 5, 7, 'B', '123', '2024-02-15 04:02:43'),
-(5, 6, 7, 'B', 'Jean Dee', '2024-02-16 05:13:23'),
-(6, 0, 7, 'B', 'a', '2024-02-23 10:23:43');
+(10, 7, 7, 'A', 'zwa', '2024-03-11 06:23:14'),
+(11, 7, 9, 'B', 'Delivery', '2024-03-11 06:33:51');
 
 -- --------------------------------------------------------
 
@@ -252,7 +263,7 @@ CREATE TABLE `clients` (
   `name` varchar(200) NOT NULL,
   `branch` varchar(200) NOT NULL,
   `date_created` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `clients`
@@ -270,22 +281,20 @@ INSERT INTO `clients` (`client_id`, `name`, `branch`, `date_created`) VALUES
 
 CREATE TABLE `deployed_employees` (
   `deployed_employee_id` int(11) NOT NULL,
-  `employee_id` int(11) NOT NULL,
+  `employment_id` int(11) NOT NULL,
   `client_id` int(11) NOT NULL,
   `date_from` date NOT NULL,
   `date_to` date NOT NULL,
   `date_created` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `deployed_employees`
 --
 
-INSERT INTO `deployed_employees` (`deployed_employee_id`, `employee_id`, `client_id`, `date_from`, `date_to`, `date_created`) VALUES
-(3, 4, 1, '2021-02-12', '2024-02-13', '2024-02-12 10:01:37'),
-(4, 7, 2, '2021-06-12', '2024-02-09', '2024-02-12 10:02:12'),
-(5, 9, 2, '2024-02-08', '2024-02-16', '2024-02-15 04:50:44'),
-(6, 9, 1, '2024-02-09', '2024-02-29', '2024-02-21 08:16:08');
+INSERT INTO `deployed_employees` (`deployed_employee_id`, `employment_id`, `client_id`, `date_from`, `date_to`, `date_created`) VALUES
+(16, 5, 1, '2024-03-12', '2024-03-22', '2024-03-11 07:43:30'),
+(17, 6, 2, '2024-03-13', '2024-03-30', '2024-03-11 07:47:19');
 
 -- --------------------------------------------------------
 
@@ -313,7 +322,7 @@ CREATE TABLE `employees` (
   `rfid` text NOT NULL,
   `gsis` text NOT NULL,
   `date_created` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `employees`
@@ -343,14 +352,15 @@ CREATE TABLE `employments` (
   `rest_day_1` varchar(200) NOT NULL,
   `rest_day_2` varchar(200) NOT NULL,
   `date_created` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `employments`
 --
 
 INSERT INTO `employments` (`employment_id`, `date_hired`, `date_end`, `employee_id`, `position`, `department`, `e_type`, `status`, `active`, `rest_day_1`, `rest_day_2`, `date_created`) VALUES
-(5, '2020-06-12', '2024-02-21', 4, 'Administrator', 'Field', 'Field', 'Contractual', 0, 'Monday', 'Tuesday', '2024-02-22 03:15:01');
+(5, '2020-06-12', '2024-02-21', 4, 'Administrator', 'Field', 'Field', 'Contractual', 0, 'Monday', 'Tuesday', '2024-02-22 03:15:01'),
+(6, '2024-03-11', '2024-03-11', 7, 'Administrator', 'Field', 'Thursday', 'Monday', 0, '', '', '2024-03-11 07:46:52');
 
 -- --------------------------------------------------------
 
@@ -363,7 +373,7 @@ CREATE TABLE `holidays` (
   `holiday_date` date NOT NULL,
   `holiday` varchar(200) NOT NULL,
   `date_created` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `holidays`
@@ -385,7 +395,7 @@ CREATE TABLE `mortuaries` (
   `period` varchar(100) NOT NULL,
   `year` varchar(100) NOT NULL,
   `date_created` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `mortuaries`
@@ -410,7 +420,7 @@ CREATE TABLE `service_deductions` (
   `ee` float NOT NULL,
   `date_created` timestamp NOT NULL DEFAULT current_timestamp(),
   `category` varchar(100) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -423,7 +433,7 @@ CREATE TABLE `system_types` (
   `type` varchar(200) NOT NULL,
   `category` varchar(100) NOT NULL,
   `date_created` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `system_types`
@@ -481,7 +491,7 @@ ALTER TABLE `clients`
 --
 ALTER TABLE `deployed_employees`
   ADD PRIMARY KEY (`deployed_employee_id`),
-  ADD KEY `employee_id` (`employee_id`),
+  ADD KEY `employee_id` (`employment_id`),
   ADD KEY `client_id` (`client_id`);
 
 --
@@ -529,13 +539,13 @@ ALTER TABLE `system_types`
 -- AUTO_INCREMENT for table `attendance`
 --
 ALTER TABLE `attendance`
-  MODIFY `attendance_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=104;
+  MODIFY `attendance_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=120;
 
 --
 -- AUTO_INCREMENT for table `attendance_groups`
 --
 ALTER TABLE `attendance_groups`
-  MODIFY `attendance_group_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `attendance_group_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `banks`
@@ -547,13 +557,13 @@ ALTER TABLE `banks`
 -- AUTO_INCREMENT for table `bank_accounts`
 --
 ALTER TABLE `bank_accounts`
-  MODIFY `bank_account_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `bank_account_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `beneficiaries`
 --
 ALTER TABLE `beneficiaries`
-  MODIFY `beneficiary_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `beneficiary_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `clients`
@@ -565,7 +575,7 @@ ALTER TABLE `clients`
 -- AUTO_INCREMENT for table `deployed_employees`
 --
 ALTER TABLE `deployed_employees`
-  MODIFY `deployed_employee_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `deployed_employee_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `employees`
@@ -577,7 +587,7 @@ ALTER TABLE `employees`
 -- AUTO_INCREMENT for table `employments`
 --
 ALTER TABLE `employments`
-  MODIFY `employment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `employment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `holidays`
@@ -617,7 +627,7 @@ ALTER TABLE `beneficiaries`
 -- Constraints for table `deployed_employees`
 --
 ALTER TABLE `deployed_employees`
-  ADD CONSTRAINT `deployed_employees_ibfk_1` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`employee_id`),
+  ADD CONSTRAINT `deployed_employees_ibfk_1` FOREIGN KEY (`employment_id`) REFERENCES `employments` (`employment_id`),
   ADD CONSTRAINT `deployed_employees_ibfk_2` FOREIGN KEY (`client_id`) REFERENCES `clients` (`client_id`);
 
 --

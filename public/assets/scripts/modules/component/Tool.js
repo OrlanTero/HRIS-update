@@ -633,13 +633,20 @@ export function SetNewComboItems(combo, items) {
 
     floatingcon.innerHTML = "";
 
-    for (const item of items) {
-        if (typeof item == "string") {
-            AddNewComboItem(combo, item, item);
-        } else {
-            AddNewComboItem(combo, item.value, item.text);
+    if (typeof items === "object") {
+        for (let i = 0; i < items.text.length; i++) {
+            AddNewComboItem(combo, items.value[i], items.text[i]);
+        }
+    } else {
+        for (const item of items) {
+            if (typeof item == "string") {
+                AddNewComboItem(combo, item, item);
+            }else {
+                AddNewComboItem(combo, item.value, item.text);
+            }
         }
     }
+
 
     ListenToThisCombo(combo);
 }
