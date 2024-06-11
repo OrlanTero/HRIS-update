@@ -10,7 +10,7 @@ class Connection
 
     protected $HOST = "localhost";
 
-    protected $DATABASE = "hris_database";
+    protected $DATABASE = "hris_new";
 
     protected $USERNAME = "root";
 
@@ -114,16 +114,32 @@ class Connection
         return $fetchAll ? $stmt->fetchAll() : $stmt->fetch();
     }
 
-    public function FilterMultiConditionBetweenDates($table, $condition, $betweenDates, $limitData, $fetchAll)
+    public function FilterMultiConditionBetweenDates($table, $primary, $condition, $betweenDates, $limitData, $fetchAll)
     {
 
         $hasFilterDate = !empty($betweenDates['fromDate']) && !empty($betweenDates['toDate']);
+        $column  = $this->ConditionObjFilter($condition, $primary);
+        $hasLimit = !empty($limitData['limit']);
+        $hasOrder = !empty($limitData['order']);
+        $hasOrderBy = !empty($limitData['by']);
+        $hasLimitData =  $hasLimit || $hasOrder || $hasOrderBy;
 
-        $bs = $hasFilterDate ? " " . ($betweenDates['column'] === 'default' ? 'date_created' : $betweenDates['column']) . " BETWEEN('".$betweenDates['fromDate']."', '".$betweenDates['toDate']."') " : "";
+        $bs = $hasFilterDate ? " " . ($betweenDates['column'] === 'default' ? 'date_created' : $betweenDates['column']) . " BETWEEN '".$betweenDates['fromDate']."' AND '".$betweenDates['toDate']."' " : "";
+//
+        $w = !empty($column) ? $this->MultiConditionToQ($column, " AND ") : " ";
 
-        $w = $this->MultiConditionToQ($condition, " AND ");
+        $l = $hasLimit ? " LIMIT " . $limitData['limit'] : "";
+        $ho = $hasOrder ? $limitData['order'] === "Ascending" ? " ASC " : " DESC " : "";
+        $hob = $hasOrderBy ? " ORDER BY " . (strtoupper($limitData['by']) === "ID" ? $primary : $limitData['by']) : "";
 
-        return $w;
+        $all =  $hob . $ho . $l ;
+
+        $stmt = $w . ($hasFilterDate ? " AND ".$bs : '') . ' ' . $all;
+
+        $query = "SELECT * FROM " . $table . (!empty($column) ?  " WHERE " : "") . $stmt;
+
+//        return $query;
+        return $this->Query($query, $fetchAll);
 //        $w = empty($condition) ? "" : " WHERE " . $w;
 //        $l = $limit ? "LIMIT " . $limit : "";
 //        $query = implode(" ", array("SELECT * FROM ", $table . $w, $order, $l));
@@ -131,6 +147,17 @@ class Connection
 //        $stmt->execute();
 //
 //        return $fetchAll ? $stmt->fetchAll() : $stmt->fetch();
+    }
+
+    public function ConditionObjFilter($conditions, $primary)
+    {
+        $allConditions = [];
+
+        foreach ($conditions as $condition) {
+            $allConditions[] = [strtoupper($condition['column']) === "ID" ? $primary : $condition['column'], $condition['operator'], $condition['value']];
+        }
+
+        return $allConditions;
     }
 
     public function MultiConditionToQOption($options): string
@@ -184,6 +211,29 @@ class Connection
         return $fetchAll ? $stmt->fetchAll() : $stmt->fetch();
     }
 
+    public function SelectThisWeek($table, $where, $datecolname, $fetchAll, $condition = "=")
+    {
+        $today = " " . $datecolname . "  >= now() - INTERVAL 1 WEEK AND ";
+        $w = isset($where) ? " WHERE " . $today . " " . $this->ConditionToQ($where, " AND ", $condition) : "";
+        $query = "SELECT * FROM " . $table . $w;
+        $stmt = $this->CONNECTION->prepare($query);
+        $stmt->execute();
+
+        return $fetchAll ? $stmt->fetchAll() : $stmt->fetch();
+    }
+
+
+    public function SelectThisYear($table, $where, $datecolname, $fetchAll, $condition = "=")
+    {
+        $today = " " . $datecolname . "  >= now() - INTERVAL 1 YEAR AND ";
+        $w = isset($where) ? " WHERE " . $today . " " . $this->ConditionToQ($where, " AND ", $condition) : "";
+        $query = "SELECT * FROM " . $table . $w;
+        $stmt = $this->CONNECTION->prepare($query);
+        $stmt->execute();
+
+        return $fetchAll ? $stmt->fetchAll() : $stmt->fetch();
+    }
+
     public function SelectMultiConditionToday($table, $condition, $datecolname, $fetchAll = false, $limit = false, $order = "", $specific = "*")
     {
         $today = "DATE(" . $datecolname . ")  >= now() - INTERVAL 1 DAY AND ";
@@ -226,6 +276,12 @@ class Connection
         $query = $this->MakeEditQuery($table, $data, $w);
         return $this->CONNECTION->prepare($query)->execute();
     }
+    public function UpdateMultiCondition($table, $data, $where)
+    {
+        $w = $this->MultiConditionToQ($where, " AND ");
+        $query = $this->MakeEditQuery($table, $data, " WHERE " . $w);
+        return $this->CONNECTION->prepare($query)->execute();
+    }
 
     public function MakeEditQuery($table, $data, $where): string
     {
@@ -262,7 +318,7 @@ class Connection
             $this->ERRORMESSAGE = $e->getMessage();
         }
 
-        return false;
+        return $this->ERRORMESSAGE;
     }
 
     public function MakeInsertQuery($table, $data): string

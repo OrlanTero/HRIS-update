@@ -1,13 +1,13 @@
 import {
-    addHtml, ListenToCombo,
-    ListenToForm,
-    ManageComboBoxes, SetNewComboItems
+    addHtml, GetComboValue, ListenToCombo,
+    ListenToForm, ListenToThisCombo, ListenToYearAndPeriodAsOptions,
+    ManageComboBoxes, SetComboValue, SetNewComboItems
 } from "../../../modules/component/Tool.js";
 import Popup from "../../../classes/components/Popup.js";
 import {TableListener} from "../../../classes/components/TableListener.js";
 import {
-    AddRecord, EditRecord, GetPeriodOfAYear,
-    RemoveRecords, RemoveRecordsBatch,
+    AddRecord, EditRecord, FilterRecords, GetPeriodOfAYear,
+    RemoveRecordsBatch,
     SearchRecords,
     UpdateRecords
 } from "../../../modules/app/SystemFunctions.js";
@@ -18,6 +18,10 @@ import FilterContainer from "../../../classes/components/FilterContainer.js";
 import AlertPopup, {AlertTypes} from "../../../classes/components/AlertPopup.js";
 
 const TARGET = "attendance";
+const OPTIONS = {
+    year: null,
+    period: null
+};
 
 function UpdateTable(TABLE_HTML) {
     const TABLE_BODY = document.querySelector(".main-table-body");
@@ -42,7 +46,11 @@ function DeleteRequests(ids) {
     popup.AddListeners({
         onYes: () => {
             RemoveRecordsBatch("attendance_group", {data: JSON.stringify(ids)}).then((res) => {
-                console.log(res)
+                NewNotification({
+                    title: res.code === 200 ? 'Success' : 'Failed',
+                    message: res.code === 200 ? 'Successfully Deleted Data' : 'Task Failed to perform!'
+                }, 3000, res.code === 200 ? NotificationType.SUCCESS : NotificationType.ERROR)
+
                 UpdateData();
             })
         }
@@ -60,12 +68,25 @@ function ViewRequest(id) {
         popup.Show();
 
         const form = pop.ELEMENT.querySelector("form.form-control");
+        const active = form.querySelector(".active");
+        const finished = form.querySelector(".finished");
         const TABLES = [...popup.ELEMENT.querySelectorAll(".main-attendance-table-container .attendance-table-container")].map((TABLE) => new AttendanceTableListener(TABLE));
         let selectedClient;
 
+        ListenToCombo(finished, function (v, p) {
+            if (v == 1) {
+                // Set
+                // SetComboSelectedIndex(1);
+            }
+        })
+
         const check = ListenToForm(form, function (data) {
+            data['active'] = GetComboValue(active).value;
+            data['finished'] = GetComboValue(finished).value;
+
             if (selectedClient) {
                 data['client_id'] = selectedClient.client_id;
+
             } else {
                 delete  data['client_id'];
             }
@@ -78,6 +99,8 @@ function ViewRequest(id) {
                         title:  'Success',
                         message: 'Successfully updated',
                     }, 3000,   NotificationType.SUCCESS)
+                }).then(() =>  {
+                    return EditRecord("attendance_group", {id, data: JSON.stringify(data)});
                 })
                 .catch(() => {
                     NewNotification({
@@ -103,8 +126,6 @@ function ViewRequest(id) {
                 {row: 7, color: "#FFDEC5"},
             ]);
         }
-
-
 
         ManageComboBoxes()
     }))
@@ -235,8 +256,7 @@ function ManageButtons() {
     FLTER.Load("ATTENDANCE_GROUP_TABLE_HEADER_TEXT", "ATTENDANCE_GROUP_BODY_KEY")
 
     FLTER.AddListeners({onFilter: function (data) {
-        console.log(data)
-        // UpdateTable(data)
+        UpdateTable(data);
     }});
 
     filter.addEventListener("click", function () {
@@ -244,11 +264,20 @@ function ManageButtons() {
     })
     
 }
+function Listens() {
+    const yearPeriod = document.querySelector(".year-period");
 
+    ListenToYearAndPeriodAsOptions(yearPeriod, function (options) {
+        FilterRecords(TARGET, {data: JSON.stringify(options)}).then(r => {
+            UpdateTable(r)
+        })
+    })
+}
 function Init() {
     ManageSearchEngine();
     ManageTable();
     ManageButtons();
+    Listens();
 }
 
 document.addEventListener("DOMContentLoaded", Init);

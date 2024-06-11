@@ -2,8 +2,19 @@
   position: fixed
   min-width: 250px
   min-height: 150px
+  max-height: 400px
+  overflow: auto
   width: 250px
   border-radius: 6px
   background: #ffffff
   box-shadow: $component_boxshadow
   z-index: 999 !important
+
+.just-a-list
+  padding: 10px
+  li
+    list-style-type: none
+    padding: 10px
+    cursor: pointer
+    &:hover
+      background: #ebeeee

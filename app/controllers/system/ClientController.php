@@ -11,4 +11,7 @@ class ClientController extends ControlDefaultFunctions
     protected $TABLE_NAME = "clients";
     protected $TABLE_PRIMARY_ID = "client_id";
     protected $SEARCH_LOOKUP = ["name", "branch"];
+
+    protected $CATEGORY = \ActivityLogCategories::CLIENTS;
+
 }

@@ -13,4 +13,7 @@ namespace Application\abstracts;
     public $account_number;
 
     public $active;
+
+    public $db_status;
+
 }

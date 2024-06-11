@@ -40,8 +40,9 @@ $ALLCLIENTS = $clientControl->getAllRecords(true);
                 <div class="header-nav">
                     <div class="left">
                         <div class="title">
-                            <h2>Manage Clients</h2>
+                            <h2>Assign Employees</h2>
                         </div>
+
                     </div>
                     <div class="right"></div>
                 </div>
@@ -51,6 +52,14 @@ $ALLCLIENTS = $clientControl->getAllRecords(true);
                     <div class="selector-header">
                         <div class="title">
                             <h2>Clients</h2>
+                        </div>
+                        <div class="search-engine-parent full-width">
+                            <div class="search-engine">
+                                <div class="icon">
+                                    <?= UseIcon("magnifying-glass-thin") ?>
+                                </div>
+                                <input type="text" name="search-records" placeholder="Search Records...">
+                            </div>
                         </div>
                     </div>
                     <div class="selector-body">
@@ -98,7 +107,6 @@ $ALLCLIENTS = $clientControl->getAllRecords(true);
 
                         </div>
                         <div class="main-table-body main-table-requests">
-<!--                            --><?php //= CreateTable($DEPLOYMENT_TABLE_HEADER_TEXT, $DEPLOYMENT_TABLE_BODY_KEY, $RECORDS, $ID, $BUTTON) ?>
                         </div>
                     </div>
                 </div>

@@ -11,4 +11,6 @@ class SystemTypeControl extends ControlDefaultFunctions
     protected $TABLE_NAME = "system_types";
     protected $TABLE_PRIMARY_ID = "type_id";
     protected $SEARCH_LOOKUP = [];
+    protected $CATEGORY = \ActivityLogCategories::DATA_MANAGEMENT;
+
 }

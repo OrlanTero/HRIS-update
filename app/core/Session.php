@@ -3,15 +3,14 @@
 namespace Application\core;
 
 use Application\abstracts\UserAbstract;
+use Application\abstracts\UserProfileAbstract;
 use Application\models\User;
 
-class Session extends User
+class Session extends UserProfileAbstract
 {
     public $hasUser = false;
     public $isAdmin = false;
     public $photoURL;
-
-    public $typeName;
 
     public function __construct()
     {
@@ -22,7 +21,7 @@ class Session extends User
     {
         global $USER_TYPES_TEXT;
 
-        $vars = get_class_vars(UserAbstract::class);
+        $vars = get_class_vars(UserProfileAbstract::class);
 
         foreach (array_keys($vars) as $var) {
             if (property_exists($user, $var)) {
@@ -30,17 +29,27 @@ class Session extends User
             }
         }
 
-        $this->photoURL = $user->photoURL;
-        $this->typeName = ucwords($USER_TYPES_TEXT[$this->user_type]);
+//        $this->photoURL = $user->photoURL;
     }
 
     public function start(): void
     {
-        $_SESSION["user_id"] = $this->user_id;
-        $_SESSION["is_admin"] = $this->user_type != 1;
+        $_SESSION["user_id"] = $this->id;
+        $_SESSION["is_admin"] = true;
         $_SESSION["session"] = $this;
 
         $this->isAdmin = $_SESSION["is_admin"];
         $this->hasUser = isset($_SESSION["user_id"]);
+    }
+
+    public function logout()
+    {
+        global $KLEIN;
+
+        $_SESSION['session'] = null;
+
+        session_destroy();
+
+        $KLEIN->response()->redirect('/login');
     }
 }

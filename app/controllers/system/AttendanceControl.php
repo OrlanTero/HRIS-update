@@ -13,7 +13,11 @@ class AttendanceControl extends ControlDefaultFunctions
     protected $TABLE_PRIMARY_ID = "attendance_id";
     protected $SEARCH_LOOKUP = [];
 
+    protected $CATEGORY = \ActivityLogCategories::ATTENDANCE;
+
+
     public function add($data) {
+        global  $ACTIVITY_CONTROL;
         try {
             foreach ($data as $attendance) {
                 $status = $attendance['status'];
@@ -31,8 +35,13 @@ class AttendanceControl extends ControlDefaultFunctions
                 }
             }
 
+            $ACTIVITY_CONTROL->insert($this->CATEGORY, \ActivityLogActionTypes::MODIFY, 200);
+
+
             return new Response(200, "Successfully Saved");
         } catch (\Exception $e) {
+            $ACTIVITY_CONTROL->insert($this->CATEGORY, \ActivityLogActionTypes::MODIFY, 204);
+
             return new Response(204, "Failed to Save!");
         }
     }

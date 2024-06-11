@@ -15,4 +15,7 @@ abstract class AttendanceGroupAbstract extends ModelDefaultFunctions
     public $active;
 
     public $finished;
+
+    public $db_status;
+
 }

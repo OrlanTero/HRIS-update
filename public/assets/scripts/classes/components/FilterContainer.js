@@ -155,6 +155,7 @@ export  class FilterContainer {
 
         const limit = this.ELEMENT.querySelector("input[name=limit]");
         const order = this.ELEMENT.querySelector("input[name=order]");
+        const order_by = this.ELEMENT.querySelector(".order_by");
 
         const dateData = {
             fromDate: fromDate.value,
@@ -173,12 +174,12 @@ export  class FilterContainer {
 
         const limitData = {
             limit: limit.value,
-            order: order.value
+            order: order.value,
+            by: GetComboValue(order_by).value
         }
 
         const data = {dateData, columnData, limitData};
 
-        console.log(data)
         return new Promise((resolve,reject) => {
             Ajax({
                 url: `/components/popup/system/filterTable`,
@@ -186,6 +187,7 @@ export  class FilterContainer {
                 data: {data: JSON.stringify(data), options: JSON.stringify(this.OPTIONS), tableData: JSON.stringify(this.COLUMNINFO)},
                 success: (data) => {
                     ExecuteFn(this.LISTENERS, "onFilter", data);
+                    this.Hide();
                     resolve(data);
                 },
             });
@@ -250,6 +252,7 @@ export  class FilterContainer {
     PlaceDatas() {
         // place filter by columns
         const threeInput = this.ELEMENT.querySelectorAll(".filter-column .three-input-container");
+        const order_by = this.ELEMENT.querySelector(".filter-options .order_by");
 
         // FILTER DATES
         const filterDates = this.ELEMENT.querySelector(".filter-dates");
@@ -261,6 +264,7 @@ export  class FilterContainer {
            HideShowComponent(colItem, colChckbox.checked, false);
         })
 
+        SetNewComboItems(order_by, {text: this.COLUMNS.header, value: this.COLUMNS.body});
 
         for (const TI of threeInput) {
             const combo = TI.querySelector(".custom-combo-box");
@@ -271,11 +275,11 @@ export  class FilterContainer {
             SetNewComboItems(combo, {text: this.COLUMNS.header, value: this.COLUMNS.body});
             
             operator.addEventListener("change", function () {
-                const validOperators = ["==", "===", "<=", ">=", ">", "<"];
+                const validOperators = ["=", "<=", ">=", ">", "<"];
                 const isValid = validOperators.includes(operator.value.trim());
 
                 if (!isValid) {
-                    operator.value = "==";
+                    operator.value = "=";
                 }
             });
 

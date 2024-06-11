@@ -11,13 +11,14 @@ import {TableListener} from "../../../classes/components/TableListener.js";
 import {
     AddRecord, EditRecord,
     GetPeriodOfAYear,
-    RemoveRecords,
+    RemoveRecords, RemoveRecordsBatch,
     SearchRecords,
     UpdateRecords
 } from "../../../modules/app/SystemFunctions.js";
 import {AddNewBankAccount, GetEmployee, SelectEmployee} from "../../../modules/app/Administrator.js";
 import {NewNotification, NotificationType} from "../../../classes/components/NotificationPopup.js";
-
+import AlertPopup, {AlertTypes} from "../../../classes/components/AlertPopup.js";
+import FilterContainer from "../../../classes/components/FilterContainer.js";
 const TARGET = "holidays";
 
 function UpdateTable(TABLE_HTML) {
@@ -32,26 +33,28 @@ function UpdateData() {
 }
 
 function DeleteRequests(ids) {
-    const popup = new Popup("category/deleteRecord", null, {
-        backgroundDismiss: false,
+    const popup = new AlertPopup({
+        primary: "Remove Holidays?",
+        secondary: `${ids.length} selected`,
+        message: "You will remove this holiday"
+    }, {
+        alert_type: AlertTypes.YES_NO,
     });
 
-    popup.Create().then((pop) => {
-        popup.Show();
+    popup.AddListeners({
+        onYes: () => {
+            RemoveRecordsBatch(TARGET, {data: JSON.stringify(ids)}).then((res) => {
+                NewNotification({
+                    title: res.code === 200 ? 'Success' : 'Failed',
+                    message: res.code === 200 ? 'Successfully Deleted Data' : 'Task Failed to perform!'
+                }, 3000, res.code === 200 ? NotificationType.SUCCESS : NotificationType.ERROR)
 
-        const no = pop.ELEMENT.querySelector(".no-btn");
-        const yes = pop.ELEMENT.querySelector(".yes-btn");
-
-        no.addEventListener("click", () => {
-            popup.Remove();
-        });
-
-        yes.addEventListener("click", () => {
-            RemoveRecords(TARGET, ids.map((id) => {
-                return {id: id}
-            })).then(() => UpdateData().then(() => popup.Remove()))
-        });
+                UpdateData();
+            })
+        }
     })
+
+    popup.Create().then(() => { popup.Show() })
 }
 
 function ViewRequest(id) {
@@ -165,10 +168,28 @@ function ManageSearchEngine() {
         Search(searchEngine.value)
     })
 }
+function ManageButtons() {
+    const filter = document.querySelector(".filter-button");
 
+    const FLTER = new FilterContainer({}, { table: "holidays", id: "holiday_id", control: "HOLIDAY_CONTROL"});
+
+    FLTER.Create().then(() => FLTER.Hide());
+
+    FLTER.Load("HOLIDAYS_TABLE_HEADER_TEXT", "HOLIDAYS_TABLE_BODY_KEY")
+
+    FLTER.AddListeners({onFilter: function (data) {
+            UpdateTable(data);
+        }});
+
+    filter.addEventListener("click", function () {
+        FLTER.Show();
+    })
+
+}
 function Init() {
     ManageSearchEngine();
     ManageTable();
+    ManageButtons();
 }
 
 document.addEventListener("DOMContentLoaded", Init);

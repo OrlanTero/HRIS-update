@@ -1,6 +1,6 @@
 <?php
 global $APPLICATION, $DEPARTMENTS, $EMPLOYMENT_STATUS, $EMPLOYMENT_TYPES, $EMPLOYMENT_POSITIONS, $RESTDAYS;
-global $BENEFICIARIES_TABLE_BODY_KEY, $BENEFICIARIES_TABLE_HEADER_TEXT;
+global $BENEFICIARIES_TABLE_BODY_KEY, $BENEFICIARIES_TABLE_HEADER_TEXT, $BENEFICIARY_TYPES;
 
 use Application\models\Beneficiary;
 
@@ -61,7 +61,7 @@ $BUTTON = -1;
                                 <span>Type</span>
                             </div>
                             <div class="error-container">
-                                <?= CreateComboBox("type", "Type", ["A", "B", "C"], false, $beneficiary->type) ?>
+                                <?= CreateComboBox("type", "Type", $BENEFICIARY_TYPES, false, $beneficiary->type) ?>
                             </div>
                         </div>
                     </div>

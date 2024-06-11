@@ -58,7 +58,7 @@ function UseImage($image, $asImage = false, $alt = "", $classNames = "", $styles
 {
     $path = '/public/assets/media/';
     $src = $path . $image;
-    $img = '<img libraries="' . $src . '" alt="' . $alt . '" class="' . $classNames . '"  style="'. $styles. '"/>';
+    $img = '<img src="' . $src . '" alt="' . $alt . '" class="' . $classNames . '"  style="'. $styles. '"/>';
 
     return $asImage ? $img : $src;
 }
@@ -96,6 +96,11 @@ function GetClassMemberByID($data, $id) {
     $model = $controller->get($id, true);
 
     return $model ? !is_array($data['value']) ? $model->{$data['value']} : $model->{$data['value'][0]}->{$data['value'][1]} : "";
+}
+
+function GetEnumValueOf($enum, $value)
+{
+    return str_replace("_", " ", $enum[$value - 1]);
 }
 
 function CreateEmployeeAttendanceTable($attendance_group, $employee) {
@@ -179,11 +184,11 @@ function CreateEmployeeAttendanceTable($attendance_group, $employee) {
     return $output;
 }
 
-function CreateTable($headeritems, $bodyitems, $data, $idname, $button = -1, $nocheckbox = false, $scrollable = true)
+function CreateTable($headeritems, $bodyitems, $data, $idname, $button = -1, $nocheckbox = false, $small = false, $scrollable = true, $fixed = true, $mappedColor = [])
 {
 
-    $output = '<div class="custom-grid-table ' . ($scrollable ? '' : "no-scroll") . '">
-                <table class="' . ($nocheckbox ? '' : 'has-check-box ') . '">';
+    $output = '<div class="custom-grid-table ' . (!$small ? '' : " small-size ") .  (!$fixed ? '' : " fixed-width ") . ($scrollable ? '' : "no-scroll") . '">
+                <table class="' . ($nocheckbox ? ' no-check-box ' : ' has-check-box ') . '">';
 
     $output .= '<thead class="grid-table-header"><tr>';
 
@@ -191,8 +196,19 @@ function CreateTable($headeritems, $bodyitems, $data, $idname, $button = -1, $no
         $output .= '<th>' . CreateCheckbox() . '</th>';
     }
 
+    $hi = 0;
     foreach ($headeritems as $item) {
-        $output .= '<th>' . $item . '</th>';
+        $color = FindColorInTable($hi, $mappedColor);
+
+        if (is_null($color)) {
+            $output .= '<th>' . $item . '</th>';
+
+        } else {
+            $output .= '<th style="'. (isset($color['align']) ? 'text-align: ' . $color['align'] : '') .'">' . $item . '</th>';
+
+        }
+
+        $hi++;
     }
 
     $output .= '</tr></thead>';
@@ -212,7 +228,7 @@ function CreateTable($headeritems, $bodyitems, $data, $idname, $button = -1, $no
 
         $bitem = array_fill(0, count($bodyitems), $item);
         $contents = array_map(function ($key, $val) use ($count) {
-            return (!is_array($key) ? (strtolower($key) === 'no' ? $count : $val[$key]) : GetClassMemberByID($key, $val[$key['primary']]));
+            return (!is_array($key) ? (strtolower($key) === 'no' ? $count : $val[$key]) : (isset($key['enum']) ? GetEnumValueOf($key['enum'], $val[$key['value']]) : GetClassMemberByID($key, $val[$key['primary']])));
         }, $bodyitems, $bitem);
         $i = 0;
 
@@ -228,7 +244,13 @@ function CreateTable($headeritems, $bodyitems, $data, $idname, $button = -1, $no
                     </td>
                     ';
             } else {
-                $output .= '<td>' . $content . '</td>';
+                $color = FindColorInTable($i, $mappedColor);
+
+                if (is_null($color)) {
+                    $output .= '<td>' . $content . '</td>';
+                } else {
+                    $output .= '<td style="background-color: '.$color['color'].';'. (isset($color['align']) ? 'text-align: ' . $color['align'] : '') .'">' . $content . '</td>';
+                }
             }
             $i++;
         }
@@ -245,14 +267,26 @@ function CreateTable($headeritems, $bodyitems, $data, $idname, $button = -1, $no
     return $output;
 }
 
-function CreateComboBox($name, $placeholder, $items, $firstval = false, $initial = null): string
+function FindColorInTable($index, $mappedColor = [])
+{
+    foreach ($mappedColor as $color) {
+        if ($color['column'] === $index) {
+            return $color;
+        }
+    }
+
+    return null;
+}
+
+
+function CreateComboBox($name, $placeholder, $items, $firstval = false, $initial = null, $disabled = false): string
 {
     $value = $initial ? (!is_array($initial) ? $initial : $initial['text']) : ($firstval ? $items[0] : "");
     $defValue = $initial ? (!is_array($initial) ? $initial : $initial['value']) : '';
     $output = '<div class="custom-combo-box ' . $name . '">';
     $output .= '
     <div class="main-content">
-    <input type="text" value="' . $value . '" name="' . $name . '"  placeholder="' . $placeholder . '" autocomplete="off" data-value="' . $defValue . '">
+    <input type="text" value="' . $value . '" name="' . $name . '"  placeholder="' . $placeholder . '" autocomplete="off" data-value="' . $defValue . '"  '. ($disabled ? " disabled " : "") .'  >
         <div class="icon">
         <svg width="16px" height="16px" viewBox="0 0 256 256" id="Flat" xmlns="http://www.w3.org/2000/svg">
             <path d="M128,180a3.98881,3.98881,0,0,1-2.82861-1.17139l-80-80.00024a4.00009,4.00009,0,0,1,5.65722-5.65674L128,170.34326l77.17139-77.17163a4.00009,4.00009,0,0,1,5.65722,5.65674l-80,80.00024A3.98881,3.98881,0,0,1,128,180Z"/>
@@ -464,7 +498,7 @@ function GetYearsFrom($year) {
         $years[] = $i;
     }
 
-    return $years;
+    return array_reverse($years);
 }
 
 
@@ -503,5 +537,29 @@ function ObjectToCombo($keyText, $keyValue, $objects)
                 "value" => $obj[$keyValue],
             ];
     }, $objects);
+}
 
+function ArrayToCombo($ARR)
+{
+    return array_map(function ($value, $val) {
+        return [
+            "text" => $value,
+            "value" => $val
+        ];
+    }, $ARR, range(1, count($ARR)));
+}
+
+function EightDigitRandom()
+{
+    return random_int(10000000, 99999999);
+}
+
+function GUIDV4()
+{
+    if (function_exists('com_create_guid') === true)
+    {
+        return trim(com_create_guid(), '{}');
+    }
+
+    return sprintf('%04X%04X-%04X-%04X-%04X-%04X%04X%04X', mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(16384, 20479), mt_rand(32768, 49151), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535));
 }

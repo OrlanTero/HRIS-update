@@ -9,4 +9,7 @@ class BankAccountControl extends ControlDefaultFunctions
     protected $TABLE_NAME = "bank_accounts";
     protected $TABLE_PRIMARY_ID = "bank_account_id";
     protected $SEARCH_LOOKUP = [];
+
+    protected $CATEGORY = \ActivityLogCategories::BANK_ACCOUNT;
+
 }

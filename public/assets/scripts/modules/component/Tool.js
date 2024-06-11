@@ -1,3 +1,5 @@
+import {GetPeriodOfAYear} from "../app/SystemFunctions.js";
+
 export function Ajax({
                          type,
                          url,
@@ -506,7 +508,7 @@ export function ArrPairToObj(arrays) {
     return obj;
 }
 
-export function VerifyFormData(formData, except = []) {
+export function VerifyFormData(formData, except = [], options = []) {
     let status = true;
     let empty = [];
 
@@ -518,9 +520,18 @@ export function VerifyFormData(formData, except = []) {
                     empty.push(pair[0]);
                 }
             } else {
-                if (pair[1].length === 0) {
-                    status = false;
-                    empty.push(pair[0]);
+                if (!options.length ||  options.length && options.filter(a => a.input == pair[0]).length === 0) {
+                    if (pair[1].length === 0) {
+                        status = false;
+                        empty.push(pair[0]);
+                    }
+                } else {
+                    const option = options.filter(a => a.input == pair[0])[0];
+
+                    if (pair[1].length === 0 || pair[1].length < option.min) {
+                        status = false;
+                        empty.push(pair[0]);
+                    }
                 }
             }
         }
@@ -633,7 +644,7 @@ export function SetNewComboItems(combo, items) {
 
     floatingcon.innerHTML = "";
 
-    if (typeof items === "object") {
+    if (typeof items === "object" && (typeof items[0] !== "string" && typeof items[0].text !== "string")) {
         for (let i = 0; i < items.text.length; i++) {
             AddNewComboItem(combo, items.value[i], items.text[i]);
         }
@@ -710,7 +721,7 @@ function ResetListenerOfCombo(combo) {
     items.forEach((item) => RemoveAllListenerOf(item));
 }
 
-export function ListenToThisCombo(combo) {
+export function ListenToThisCombo(combo, callback = false) {
     const main = combo.querySelector(".main-content");
     const floating = combo.querySelector(".floating-container");
     const items = floating.querySelectorAll(".item");
@@ -815,6 +826,7 @@ export function ListenToThisCombo(combo) {
             input.value = item.textContent;
             input.setAttribute("data-value", item.getAttribute("value"));
             setComboActive(false);
+            callback && callback(item.getAttribute("value"), item.textContent);
         });
 
         i++;
@@ -832,6 +844,8 @@ export function ListenToThisCombo(combo) {
     input.addEventListener("blur", () => {
         if (input.value.length === 0) {
             reset();
+        } else {
+
         }
     });
 
@@ -861,12 +875,12 @@ export function ListenToThisCombo(combo) {
             const ind = isItemExist(input.value);
 
             if (ind < 0) {
-                console.log(input.value)
-
                 reset();
                 input.value = "";
             } else {
                 input.value = items[ind].textContent;
+
+                callback && callback(items[ind].getAttribute("value"), items[ind].textContent);
             }
 
             if (!SEARCHING) {
@@ -1442,31 +1456,40 @@ export function ReformatURI(uri) {
 //     return result;
 // }
 
-export function ListenToForm(form, callback, excepts = []) {
+export function ListenToForm(form, callback, excepts = [], options = []) {
     const clearBtn = form.querySelector(".clear-form");
 
     const getAllFields = () => {
         const input = [...form.querySelectorAll("input")].filter(i => !i.classList.contains("table-checkbox"));
+        const disabledInputWhereCounts = [...form.querySelectorAll("input[stillcount=true]")]
         const textarea = form.querySelectorAll("textarea");
         const combos = form.querySelectorAll(".custom-combo-box");
+
+        if (disabledInputWhereCounts.length) {
+            for(const i of disabledInputWhereCounts) {
+                input.push(i);
+            }
+        }
 
         return {input, textarea, combos};
     }
 
     const disableButton = (btn, bool) => {
-        const parent = btn.parentNode;
+        if (btn) {
+            const parent = btn.parentNode;
 
-        EnableDisableButton(btn, bool);
+            EnableDisableButton(btn, bool);
 
-        if (parent.classList.contains('form-group')) {
-            EnableDisableButton(parent, bool);
+            if (parent.classList.contains('form-group')) {
+                EnableDisableButton(parent, bool);
+            }
         }
     }
 
     const check = (ignore = false) => {
         const formdata = new FormData(form);
         const data = Object.fromEntries(formdata);
-        const verify = VerifyFormData(formdata, excepts);
+        const verify = VerifyFormData(formdata, excepts, options);
         const button = form.querySelector("input[type=submit]");
 
         if (button) {
@@ -1659,4 +1682,98 @@ export function SetEndOfContenteditable(contentEditableElement)
         range.collapse(false);//collapse the range to the end point. false means collapse to end rather than the start
         range.select();//Select the range (make it the visible selection
     }
+}
+
+
+export function ListenToThisAccordion(accordion) {
+    const items = accordion.querySelectorAll(".item");
+
+    for (const item of items) {
+        const head = item.querySelector(".head");
+
+        if (head) {
+            head.addEventListener("click", function () {
+                ToggleComponentClass(item, "active", !item.classList.contains("active"))
+            })
+        }
+    }
+}
+
+export function ManageAccordions()  {
+    const accordions = document.querySelectorAll(".custom-accordion");
+
+    for (const accordion of accordions) {
+        ListenToThisAccordion(accordion);
+    }
+}
+
+export function ListenToYearAndPeriodAsOptions(year_and_period, callback, includes = []) {
+    const options = {
+        year: null,
+        period: null
+    };
+
+    if (includes.length) {
+        includes.forEach((i) => options[i] = null);
+    }
+
+    const year = year_and_period.querySelector(".year");
+    const period = year_and_period.querySelector(".period");
+
+    const dooCallback = () => {
+        if (options.year === null) {
+            delete options.year;
+        }
+
+        if (options.period === null) {
+            delete options.period;
+        }
+
+        includes.forEach((i) => {
+            if (options[i] == null) {
+                delete options[i];
+            }
+        })
+
+        callback(options);
+    }
+
+    ListenToThisCombo(year, function (_, y) {
+        SetNewComboItems(period, GetPeriodOfAYear(y));
+
+        options.year = y;
+
+        dooCallback();
+
+        ListenToThisCombo(period, function (_, p) {
+            options.period = p;
+
+            dooCallback();
+
+        })
+    })
+
+    includes.forEach((item) => {
+        const elem = year_and_period.querySelector("." + item);
+
+        ListenToThisCombo(elem, function (_, y) {
+            options[item] = _;
+
+            dooCallback();
+        })
+    })
+}
+
+export function ChunkArray(array, size) {
+    return array.reduce((resultArray, item, index) => {
+        const chunkIndex = Math.floor(index/size);
+
+        if(!resultArray[chunkIndex]) {
+            resultArray[chunkIndex] = [];
+        }
+
+        resultArray[chunkIndex].push(item);
+
+        return resultArray;
+    }, [])
 }

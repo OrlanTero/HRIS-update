@@ -1,0 +1,23 @@
+<?php
+
+global $PAYROLL_TABLE_HEADER_TEXT, $PAYROLL_TABLE_BODY_KEY;
+
+use Application\models\PayrollAnalyzer;
+
+$group_id = $_POST['attendance_group'];
+
+$ANALYZER = new PayrollAnalyzer($group_id);
+
+$ANALYZER->init();
+
+$RESULTS = $ANALYZER->computeAll();
+
+$RECORDS = array_map(function ($result) {
+    $result = (array) $result;
+
+    $result['id'] = '';
+
+    return $result;
+}, $RESULTS);
+
+echo CreateTable($PAYROLL_TABLE_HEADER_TEXT, $PAYROLL_TABLE_BODY_KEY, $RECORDS, "id", false, true,  true);

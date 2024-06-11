@@ -9,4 +9,7 @@ namespace Application\abstracts;
     public $period;
 
     public $year;
+
+     public $db_status;
+
 }

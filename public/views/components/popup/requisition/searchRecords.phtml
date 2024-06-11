@@ -1,0 +1,11 @@
+<?php
+
+global $APPLICATION, $REQUISITION_TABLE_BODY_KEY, $REQUISITION_TABLE_BODY_KEY;
+
+$search = $_POST['search'];
+$control = $APPLICATION->FUNCTIONS->REQUISITION_CONTROL;
+$RECORDS = $control->searchRecords($search,false);
+$ID = "requisition_id";
+$BUTTON = false;
+
+echo CreateTable($REQUISITION_TABLE_BODY_KEY, $REQUISITION_TABLE_BODY_KEY, $RECORDS, $ID, $BUTTON) ?>

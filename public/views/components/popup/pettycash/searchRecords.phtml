@@ -1,0 +1,11 @@
+<?php
+
+global $APPLICATION, $PETTYCASH_TABLE_BODY_KEY, $PETTYCASH_TABLE_HEADER_TEXT;
+
+$search = $_POST['search'];
+$control = $APPLICATION->FUNCTIONS->PETTYCASH_CONTROL;
+$RECORDS = $control->searchRecords($search, false);
+$ID = "pettycash_id";
+$BUTTON = false;
+
+echo CreateTable($PETTYCASH_TABLE_HEADER_TEXT, $PETTYCASH_TABLE_BODY_KEY, $RECORDS, $ID, $BUTTON);

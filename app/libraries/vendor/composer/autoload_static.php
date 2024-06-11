@@ -6,7 +6,15 @@ namespace Composer\Autoload;
 
 class ComposerStaticInit027e2411311221df9ae85892051346a4
 {
+    public static $files = array (
+        '6dcc7fc6910472564e7b11f0b5d852b5' => __DIR__ . '/..' . '/szymach/c-pchart/src/Resources/data/constants.php',
+    );
+
     public static $prefixLengthsPsr4 = array (
+        'P' => 
+        array (
+            'PHPMailer\\PHPMailer\\' => 20,
+        ),
         'O' => 
         array (
             'Orlan\\Src\\' => 10,
@@ -15,9 +23,17 @@ class ComposerStaticInit027e2411311221df9ae85892051346a4
         array (
             'Klein\\' => 6,
         ),
+        'C' => 
+        array (
+            'CpChart\\' => 8,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
+        'PHPMailer\\PHPMailer\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
+        ),
         'Orlan\\Src\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src',
@@ -25,6 +41,10 @@ class ComposerStaticInit027e2411311221df9ae85892051346a4
         'Klein\\' => 
         array (
             0 => __DIR__ . '/..' . '/klein/klein/src/Klein',
+        ),
+        'CpChart\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/szymach/c-pchart/src',
         ),
     );
 

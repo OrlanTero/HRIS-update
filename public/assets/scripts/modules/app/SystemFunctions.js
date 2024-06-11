@@ -64,6 +64,7 @@ export function RemoveRecordsBatch(target, data = []) {
             type: "POST",
             data: data,
             success: (data) => {
+                console.log(data)
                 try {
                     resolve(JSON.parse(data));
                 } catch (e) {

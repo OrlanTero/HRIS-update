@@ -10,17 +10,17 @@ class EmailControl
 
     public $MAILER;
 
-    protected $APPLICATION_PASSWORD = "jfffvzsqzfvydzyf";
+    protected $APPLICATION_PASSWORD = "kdjagzmgcxoolune";
 
     protected $HOST = "smtp.gmail.com";
 
-    protected $USERNAME = "okasasg.restaurant@gmail.com";
+    protected $USERNAME = "hrismanagementsystem@gmail.com";
 
     protected $PORT = 587;
 
     protected $SMTP = "tls";
 
-    protected $VERIFICATIONTABLE = "m_user_verifications";
+    protected $VERIFICATIONTABLE = "email_verifications";
 
     public function __construct()
     {
@@ -60,34 +60,32 @@ class EmailControl
         return $this->MAILER->send();
     }
 
-    public function sendVerificationInto($email, $type, $table = "", $altSubject = false)
+    public function sendVerificationInto($userID, $email, $table = "", $altSubject = false)
     {
-        global $APPLICATION;
         $table = $table != '' ? $table : $this->VERIFICATIONTABLE;
         $verification = random_int(100000, 999999);
-        $subject = $altSubject != false ? $altSubject : "Okasa User Verification";
-        $body = "Your verification code is: " . $verification;
+        $subject = $altSubject != false ? $altSubject : "HRIS Management System";
+        $body = "Your verification code for HRIS Authentication  is: " . $verification;
         $send = $this->sendTo($email, $subject, $body);
-        $user = $APPLICATION->FUNCTIONS->GetUser($email);
-        return $user && $send && $this->insertVerificationToUser($user->user_id, $type, $verification, $table);
+        return $send && $this->insertVerificationToUser($userID, $verification, $table);
     }
 
-    private function insertVerificationToUser($user_id, $type, $verification, $table = ""): bool
+    private function insertVerificationToUser($user_id, $verification, $table = ""): bool
     {
         $table = $table != '' ? $table : $this->VERIFICATIONTABLE;
-        $this->removeAllRecentKeysOf($user_id, $type, $table);
-        return $this->CONNECTION->Insert($table, ["user_id" => $user_id, "user_type" => $type, "verification" => $verification]);
+        $this->removeAllRecentKeysOf($user_id, $table);
+        return $this->CONNECTION->Insert($table, ["user_id" => $user_id, "verification" => $verification]);
     }
 
-    public function confirmVerificationToUser($user_id, $type, $verification, $table = ""): bool
+    public function confirmVerificationToUser($user_id, $verification, $table = ""): bool
     {
         $table = $table != '' ? $table : $this->VERIFICATIONTABLE;
-        return $this->CONNECTION->Exist($table, ["user_id" => $user_id, "user_type" => $type, "verification" => $verification]);
+        return $this->CONNECTION->Exist($table, ["user_id" => $user_id, "verification" => $verification]);
     }
 
-    private function removeAllRecentKeysOf($user_id, $type, $table = "")
+    private function removeAllRecentKeysOf($user_id, $table = "")
     {
         $table = $table != '' ? $table : $this->VERIFICATIONTABLE;
-        return $this->CONNECTION->Delete($table, ['user_id' => $user_id, 'user_type' => $type]);
+        return $this->CONNECTION->Delete($table, ['user_id' => $user_id]);
     }
 }

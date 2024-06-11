@@ -13,4 +13,7 @@ namespace Application\abstracts;
     public $type;
 
     public $name;
+
+    public $db_status;
+
 }

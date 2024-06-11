@@ -18,4 +18,7 @@ abstract class UserAbstract extends ModelDefaultFunctions
     public $displayName;
     public $facebook;
 
+    public $db_status;
+
+
 }

@@ -1,1 +1,11 @@
 <?php
+
+global $APPLICATION, $MORTUARY_TABLE_BODY_KEY, $MORTUARY_TABLE_HEADER_TEXT;
+
+$data = json_decode($_POST['data'], true);
+$control = $APPLICATION->FUNCTIONS->MORTUARY_CONTROL;
+$RECORDS = $control->filterRecords($data,false);
+$ID = "mortuary_id";
+$BUTTON = false;
+
+echo CreateTable($MORTUARY_TABLE_HEADER_TEXT, $MORTUARY_TABLE_BODY_KEY, $RECORDS, $ID, $BUTTON) ?>

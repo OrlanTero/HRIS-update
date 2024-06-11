@@ -2,15 +2,18 @@
 
 global $APPLICATION, $PETTYCASH_TABLE_BODY_KEY, $PETTYCASH_TABLE_HEADER_TEXT;
 
-$control = $APPLICATION->FUNCTIONS->BANK_CONTROL;
-$RECORDS = [];
-$ID = "";
+$control = $APPLICATION->FUNCTIONS->PETTYCASH_CONTROL;
+$RECORDS = $control->getAllRecords(false);
+$ID = "pettycash_id";
 $BUTTON = false;
+
+$CREDIT = $control->getPettyCashCredit();
+$BALANCE = $control->getBalance();
 ?>
 
 <?php include "public/views/pages/structures/html_headings.phtml" ?>
 
-<title>Banks</title>
+<title>Petty Cash</title>
 
 <?php include "public/views/pages/structures/html_heading_closing.phtml" ?>
 
@@ -34,20 +37,46 @@ $BUTTON = false;
                 <div class="header-nav">
                     <div class="left">
                         <div class="title">
-                            <h2>Manage Banks</h2>
+                            <h2>Manage Petty Cash</h2>
                         </div>
                     </div>
                     <div class="right"></div>
                 </div>
             </div>
             <div class="main-body-body">
+                <div class="data-view-summary-container">
+                    <div class="summary-container">
+                        <div class="cards-container">
+                            <div class="card-container">
+                                <div class="title">
+                                    <span>Credit</span>
+                                </div>
+                                <div class="content">
+                                    <div class="text">
+                                        <span><?= $CREDIT ?></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-container">
+                                <div class="title">
+                                    <span>Balance</span>
+                                </div>
+                                <div class="content">
+                                    <div class="text">
+                                        <span><?= $BALANCE ?></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="data-table-content">
                     <div class="main-table-container table-component">
                         <div class="main-table-header">
                             <div class="table-header">
                                 <div class="left">
                                     <div class="title">
-                                        <h2>List of Banks</h2>
+                                        <h2>Petty Cash</h2>
                                     </div>
                                 </div>
                                 <div class="center">
@@ -60,7 +89,25 @@ $BUTTON = false;
                                         </div>
                                     </div>
                                 </div>
-                                <div class="right"></div>
+                                <div class="right">
+                                    <div class="icon-button filter-button">
+                                        <div class="icon">
+                                            <?= UseIcon("sliders-thin") ?>
+                                        </div>
+                                        <div class="text">
+                                            <span>Filter</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="icon-button sort-button">
+                                        <div class="icon">
+                                            <?= UseIcon("arrows-down-up-thin") ?>
+                                        </div>
+                                        <div class="text">
+                                            <span>Sort</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="table-buttons">
                                 <div class="left"></div>
@@ -105,7 +152,7 @@ $BUTTON = false;
 
     <?php include "public/views/pages/structures/html_pipes.phtml" ?>
 
-    <script type="module" src="/publ$DISBURSEMENT_TABLE_BODY_KEYic/assets/scripts/pages/main/financial/banks.js"></script>
+    <script type="module" src="/public/assets/scripts/pages/main/financial/pettycash.js"></script>
 
     <?php include "public/views/pages/structures/html_closing_parent.phtml" ?>
 

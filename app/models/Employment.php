@@ -21,7 +21,9 @@ class Employment extends EmploymentAbstract
 
     private function init(): void
     {
+        global $APPLICATION;
 
+        $this->employee = $APPLICATION->FUNCTIONS->EMPLOYEE_CONTROL->get($this->employee_id, true);
 
     }
 }

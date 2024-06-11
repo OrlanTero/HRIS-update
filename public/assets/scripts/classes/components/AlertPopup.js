@@ -161,6 +161,7 @@ export class AlertPopup {
     }
 
     Show() {
+
         if (!this.ELEMENT) return false;
 
         DisableScroll();

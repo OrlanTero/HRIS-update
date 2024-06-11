@@ -1,0 +1,140 @@
+<?php
+
+global  $APPLICATION, $LOAN_ITEM_TABLE_HEADER_TEXT, $LOAN_ITEM_TABLE_BODY_KEY;
+global   $LOAN_PAYMENT_TABLE_HEADER_TEXT, $LOAN_PAYMENT_TABLE_BODY_KEY;
+
+$control = $APPLICATION->FUNCTIONS->LOAN_CONTROL;
+$paymentControl = $APPLICATION->FUNCTIONS->LOAN_PAYMENT_CONTROL;
+$RECORDS = $control->getAllRecords(false);
+$ID = "loan_id";
+
+$PAYMENT_RECORDS  = $paymentControl->getAllRecords(false);
+$PAYMENT_ID = "payment_id";
+
+$dashboardData = $control->getDashboardData();
+
+$dashboardCards = [
+        [
+            "title" => "Employee Loan Today",
+            "value" => $dashboardData['loans']['today'],
+        ],
+        [
+            "title" => "Employee Pay Today",
+            "value" => $dashboardData['payments']['today'],
+        ],
+        [
+                "title" => "Today's Loan",
+                "value" => $dashboardData['loans']['total'],
+        ],
+        [
+            "title" => "Today's Payment",
+            "value" => $dashboardData['payments']['total'],
+        ],
+];
+?>
+
+<div class="loan-manager-container">
+    <div class="main-container">
+        <div class="left-container">
+            <div class="top-container"></div>
+            <div class="middle-container">
+                <div class="items-button">
+                    <div class="item-button new-loan-btn">
+                        <div class="icon"></div>
+                        <div class="text">
+                            <span>New Loan</span>
+                        </div>
+                    </div>
+                    <div class="item-button new-payment-btn">
+                        <div class="icon"></div>
+                        <div class="text">
+                            <span>New Payment</span>
+                        </div>
+                    </div>
+                    <div class="item-button forward-balance">
+                        <div class="icon"></div>
+                        <div class="text">
+                            <span>Forward Balance</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="right-container">
+            <div class="menu-tab-control-parent menu-bar-loan-manager">
+                <?= CreateMenuBarHeader("settings-table",["Dashboard", "Loan History", "Payment History"]) ?>
+
+                <div class="menu-content-not-official" >
+                    <div class="menu-body-item" data-category="dashboard">
+<!--                    --><?php //var_dump($dashboardData) ?>
+
+                        <div class="dashboard-cards">
+                            <?php foreach ($dashboardCards as $card): ?>
+                                <div class="dashboard-card">
+                                    <div class="main">
+                                        <p><?= $card['title'] ?></p>
+                                        <h1><?= $card['value'] ?></h1>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+
+                    <div class="menu-body-item" data-category="loan_history">
+
+                            <div class="form-group tooltip">
+                                <div class="tooltiptext">
+                                    <span>Employee</span>
+                                </div>
+                                <div class="error-container">
+                                    <div class="custom-select-box select-employee-one">
+                                        <div class="main-content">
+                                            <input type="text" name="employee_id" placeholder="Employee" readonly>
+
+                                            <div class="icon">
+                                                <svg width="256px" height="256px" viewBox="0 0 256 256" id="Flat" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M138.82861,130.82861l-80,80a4.00026,4.00026,0,0,1-5.65722-5.65722L130.34326,128,53.17139,50.82861a4.00026,4.00026,0,0,1,5.65722-5.65722l80,80A4.0006,4.0006,0,0,1,138.82861,130.82861Zm80-5.65722-80-80a4.00026,4.00026,0,0,0-5.65722,5.65722L210.34326,128l-77.17187,77.17139a4.00026,4.00026,0,0,0,5.65722,5.65722l80-80A4.0006,4.0006,0,0,0,218.82861,125.17139Z"/>
+                                                </svg>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--                                <input type="text" name="employee" placeholder="Employee" >-->
+                                </div>
+                            </div>
+
+                        <div class="main-loan-table">
+                            <?= CreateTable($LOAN_ITEM_TABLE_HEADER_TEXT, $LOAN_ITEM_TABLE_BODY_KEY, $RECORDS, $ID, false, true, true, true, false) ?>
+
+                        </div>
+                    </div>
+
+                    <div class="menu-body-item" data-category="payment_history">
+                        <div class="form-group tooltip">
+                            <div class="tooltiptext">
+                                <span>Employee</span>
+                            </div>
+                            <div class="error-container">
+                                <div class="custom-select-box select-employee-two">
+                                    <div class="main-content">
+                                        <input type="text" name="employee_id_two" placeholder="Employee" readonly>
+
+                                        <div class="icon">
+                                            <svg width="256px" height="256px" viewBox="0 0 256 256" id="Flat" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M138.82861,130.82861l-80,80a4.00026,4.00026,0,0,1-5.65722-5.65722L130.34326,128,53.17139,50.82861a4.00026,4.00026,0,0,1,5.65722-5.65722l80,80A4.0006,4.0006,0,0,1,138.82861,130.82861Zm80-5.65722-80-80a4.00026,4.00026,0,0,0-5.65722,5.65722L210.34326,128l-77.17187,77.17139a4.00026,4.00026,0,0,0,5.65722,5.65722l80-80A4.0006,4.0006,0,0,0,218.82861,125.17139Z"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--                                <input type="text" name="employee" placeholder="Employee" >-->
+                            </div>
+                        </div>
+                        <div class="main-payment-table">
+                            <?= CreateTable($LOAN_PAYMENT_TABLE_HEADER_TEXT, $LOAN_PAYMENT_TABLE_BODY_KEY, $PAYMENT_RECORDS, $PAYMENT_ID, false, true, true, true, false) ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

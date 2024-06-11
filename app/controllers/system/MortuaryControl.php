@@ -11,6 +11,7 @@ class MortuaryControl extends ControlDefaultFunctions
     protected $TABLE_NAME = "mortuaries";
     protected $TABLE_PRIMARY_ID = "mortuary_id";
     protected $SEARCH_LOOKUP = ["mortuary_id", "period", "year"];
+    protected $CATEGORY = \ActivityLogCategories::MORTUARY;
 
     public function add($data) {
         global $APPLICATION;
@@ -19,15 +20,19 @@ class MortuaryControl extends ControlDefaultFunctions
         $beneficiaries = $data['beneficiaries'];
         $control = $APPLICATION->FUNCTIONS->BENEFICIARY_CONTROL;
 
-        $insert = $this->addRecord($mortuary);
+        $insert = $this->addRecordWithLog($mortuary);
 
         if ($insert->code == 200) {
             foreach ($beneficiaries as $beneficiary) {
                 $beneficiary['mortuary_id'] = $insert->body['id'];
 
-                $control->addRecord($beneficiary);
+                unset($beneficiary['status']);
+
+                $control->addRecordWithLog($beneficiary);
             }
         }
+
+        return $insert;
     }
 
     public function edit($data) {
@@ -38,7 +43,7 @@ class MortuaryControl extends ControlDefaultFunctions
         $beneficiaries = $data['beneficiaries'];
         $control = $APPLICATION->FUNCTIONS->BENEFICIARY_CONTROL;
 
-        $edit = $this->editRecord($id, $mortuary);
+        $edit = $this->editRecordWithLog($id, $mortuary);
 
         if ($edit->code == 200) {
             foreach ($beneficiaries as $beneficiary) {
@@ -47,17 +52,17 @@ class MortuaryControl extends ControlDefaultFunctions
                 if ($beneficiary['status'] === 'created') {
                     unset($beneficiary['status']);
 
-                    $control->addRecord($beneficiary);
+                    $control->addRecordWithLog($beneficiary);
                 } else if ($beneficiary['status'] === 'edited') {
                     $id = $beneficiary['id'];
 
                     unset($beneficiary['status'], $beneficiary['id']);
 
-                    $control->editRecord($id, $beneficiary);
+                    $control->editRecordWithLog($id, $beneficiary);
                 } else if ($beneficiary['status'] === 'deleted') {
                     $id = $beneficiary['id'];
 
-                    $control->removeRecord($id);
+                    $control->removeRecordWithLog($id);
                 }
             }
         }

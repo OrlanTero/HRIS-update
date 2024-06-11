@@ -11,4 +11,7 @@ abstract class HolidayAbstract extends ModelDefaultFunctions
     public $holiday;
 
     public $date_created;
+
+    public $db_status;
+
 }

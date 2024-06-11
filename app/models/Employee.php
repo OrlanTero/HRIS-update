@@ -32,4 +32,15 @@ use Application\abstracts\EmployeeAbstract;
 
          return $APPLICATION->FUNCTIONS->BANK_ACCOUNT_CONTROL->filterRecords(["employee_id" => $this->employee_id], true);
      }
+
+     public  function getBeneficiary($period, $year)
+     {
+        global $CONNECTION;
+
+        $id = $this->employee_id;
+
+        $query = "SELECT a.* FROM `beneficiaries` as a WHERE a.employee_id = '". $id ."' AND a.mortuary_id IN (SELECT b.mortuary_id FROM mortuaries as b WHERE b.period = '". $period ."' AND b.year = '". $year ."')";
+
+        return $CONNECTION->Query($query);
+     }
  }

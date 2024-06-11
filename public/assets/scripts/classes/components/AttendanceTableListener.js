@@ -1,11 +1,7 @@
 import {
     addStyles,
-    Ajax,
-    append, CreateCheckBox,
-    CreateElement,
     HideShowComponent,
-    RemoveAllListenerOf, ResetActiveComponent, SetActiveComponent, SetEndOfContenteditable,
-    ToggleComponentClass
+    RemoveAllListenerOf, ResetActiveComponent, SetActiveComponent, SetEndOfContenteditable
 } from "../../modules/component/Tool.js";
 import {AddRecord} from "../../modules/app/SystemFunctions.js";
 
@@ -35,8 +31,8 @@ export default class AttendanceTableListener {
         this.buttons = [];
         this.selected = [];
         this.values = {
-            after: this.getCurrentValues(),
-            before: []
+            after: [],
+            before: this.getCurrentValues()
         }
 
         this.listenerEvent = {
@@ -45,7 +41,8 @@ export default class AttendanceTableListener {
         };
 
 
-        this.compute()
+        this.compute();
+
     }
 
     initElements(parent) {
@@ -114,51 +111,10 @@ export default class AttendanceTableListener {
         }
     }
 
-    init() {
-        // for (const obj of Object.values(this.listeners)) {
-        //     for (const value of Object.values(obj)) {
-        //         if (Array.isArray(value)) {
-        //             for (const val of value) {
-        //                 if (!Array.isArray(val)) {
-        //                     if (!this.buttonExist(val)) {
-        //                         const button = this.parent.querySelector(
-        //                             `.table-button[data-name=${val}]`
-        //                         );
-        //
-        //                         if (button) {
-        //                             this.buttons.push({
-        //                                 name: val,
-        //                                 element: RemoveAllListenerOf(button),
-        //                             });
-        //                         }
-        //                     }
-        //                 } else {
-        //                     if (!this.buttonExist(val[0])) {
-        //                         const button = this.parent.querySelector(
-        //                             `.table-button[data-name=${val[0]}]`
-        //                         );
-        //
-        //                         this.conditions.push(val);
-        //                         this.buttons.push({
-        //                             name: val[0],
-        //                             element: RemoveAllListenerOf(button),
-        //                         });
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
-    }
-
     resetAllListenerItems() {
         for (const item of this.elements.items) {
             RemoveAllListenerOf(item);
         }
-    }
-
-    insertItem(id, values) {
-
     }
 
     listen(callback) {
@@ -205,6 +161,11 @@ export default class AttendanceTableListener {
             };
 
             function mainEvent() {
+
+                if (parseInt(text.innerText)>24) {
+                    text.innerText = text.innerText.charAt(0);
+                    return;
+                }
                 main.computeTotal(type);
 
                 main.setTextFromSelection(text.innerText);
@@ -508,12 +469,28 @@ export default class AttendanceTableListener {
     }
 
     getBeforeValueOf(type, day) {
-        if (!this.values ) {
+        if (!this.values) {
             return null;
         }
-        if ( !this.values.before.length) {
+
+        if (!this.values.before.length) {
             return null;
         }
+
+        let item = this.values.before.filter(item => item.type == type);
+
+        if (!item.length) {
+            return null;
+        }
+
+        item = item[0].items.filter((iii) => iii.db_value.day == day);
+
+        if (!item.length) {
+            return null;
+        }
+
+        return item[0].value;
+
     }
 
     getCurrentValues() {
@@ -526,7 +503,8 @@ export default class AttendanceTableListener {
                     const val = parseInt(iii.querySelector(".text").innerText);
                     const beforeVal = main.getBeforeValueOf(item.type, day);
                     const id = iii.getAttribute("data-id");
-                    const status = (!beforeVal && isNaN(val)) ? ItemValueStatus.FIXED : (!beforeVal && !isNaN(val)) ? ItemValueStatus.ADDED : (beforeVal === val ? ItemValueStatus.FIXED : ItemValueStatus.CHANGED);
+
+                    const status = (!beforeVal && isNaN(val)) ? ItemValueStatus.FIXED : (!beforeVal && !isNaN(val)) ? (beforeVal == "0" && !isNaN(val)) ? ItemValueStatus.CHANGED : ItemValueStatus.ADDED : (beforeVal === val ? ItemValueStatus.FIXED : ItemValueStatus.CHANGED);
 
                     return {
                         value: isNaN(val) ? null : val,
@@ -561,6 +539,7 @@ export default class AttendanceTableListener {
             const changes = this.getChanges();
 
             if (changes.length) {
+                console.log(changes)
                 AddRecord("attendance_items", {data: JSON.stringify(changes)}).then((res) => {
                     if (res.code === 200) {
                         resolve(res.message);

@@ -2,15 +2,15 @@
 
 global $APPLICATION, $REQUISITION_TABLE_BODY_KEY, $REQUISITION_TABLE_HEADER_TEXT;
 
-$control = $APPLICATION->FUNCTIONS->BANK_CONTROL;
-$RECORDS = [];
-$ID = "";
+$control = $APPLICATION->FUNCTIONS->REQUISITION_CONTROL;
+$RECORDS = $control->getAllRecords(false);
+$ID = "requisition_id";
 $BUTTON = false;
 ?>
 
 <?php include "public/views/pages/structures/html_headings.phtml" ?>
 
-<title>Banks</title>
+<title>Requisition</title>
 
 <?php include "public/views/pages/structures/html_heading_closing.phtml" ?>
 
@@ -34,7 +34,7 @@ $BUTTON = false;
                 <div class="header-nav">
                     <div class="left">
                         <div class="title">
-                            <h2>Manage Banks</h2>
+                            <h2>Manage Requisition</h2>
                         </div>
                     </div>
                     <div class="right"></div>
@@ -47,7 +47,7 @@ $BUTTON = false;
                             <div class="table-header">
                                 <div class="left">
                                     <div class="title">
-                                        <h2>List of Banks</h2>
+                                        <h2>Requisition</h2>
                                     </div>
                                 </div>
                                 <div class="center">
@@ -60,7 +60,25 @@ $BUTTON = false;
                                         </div>
                                     </div>
                                 </div>
-                                <div class="right"></div>
+                                <div class="right">
+                                    <div class="icon-button filter-button">
+                                        <div class="icon">
+                                            <?= UseIcon("sliders-thin") ?>
+                                        </div>
+                                        <div class="text">
+                                            <span>Filter</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="icon-button sort-button">
+                                        <div class="icon">
+                                            <?= UseIcon("arrows-down-up-thin") ?>
+                                        </div>
+                                        <div class="text">
+                                            <span>Sort</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="table-buttons">
                                 <div class="left"></div>
@@ -105,7 +123,7 @@ $BUTTON = false;
 
     <?php include "public/views/pages/structures/html_pipes.phtml" ?>
 
-    <script type="module" src="/public/assets/scripts/pages/main/financial/banks.js"></script>
+    <script type="module" src="/public/assets/scripts/pages/main/financial/requisition.js"></script>
 
     <?php include "public/views/pages/structures/html_closing_parent.phtml" ?>
 

@@ -2,9 +2,9 @@
 
 global $APPLICATION, $ADJUSTMENTS_TABLE_BODY_KEY, $ADJUSTMENTS_TABLE_HEADER_TEXT;
 
-$control = $APPLICATION->FUNCTIONS->EMPLOYEE_CONTROL;
-$RECORDS = [];
-$ID = "employee_id";
+$control = $APPLICATION->FUNCTIONS->ADJUSTMENT_CONTROL;
+$RECORDS = $control->getAllRecords(false);
+$ID = "adjustment_id";
 $BUTTON = false;
 ?>
 
@@ -60,10 +60,33 @@ $BUTTON = false;
                                         </div>
                                     </div>
                                 </div>
-                                <div class="right"></div>
+
+                                <div class="right">
+                                    <div class="icon-button filter-button">
+                                        <div class="icon">
+                                            <?= UseIcon("sliders-thin") ?>
+                                        </div>
+                                        <div class="text">
+                                            <span>Filter</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="icon-button sort-button">
+                                        <div class="icon">
+                                            <?= UseIcon("arrows-down-up-thin") ?>
+                                        </div>
+                                        <div class="text">
+                                            <span>Sort</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="table-buttons">
-                                <div class="left"></div>
+                                <div class="left">
+                                    <div class="content-flex year-period">
+
+                                    </div>
+                                </div>
                                 <div class="right">
                                     <div class="icon-button table-button show-component" data-name="view-request">
                                         <div class="icon">

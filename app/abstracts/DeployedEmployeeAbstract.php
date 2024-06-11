@@ -15,4 +15,7 @@ abstract class DeployedEmployeeAbstract extends ModelDefaultFunctions
     public $date_to;
 
     public $date_created;
+
+    public $db_status;
+
 }

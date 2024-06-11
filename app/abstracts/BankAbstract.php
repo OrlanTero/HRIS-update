@@ -11,4 +11,7 @@ abstract class BankAbstract extends ModelDefaultFunctions
     public $branch;
 
     public $date_created;
+
+    public $db_status;
+    
 }

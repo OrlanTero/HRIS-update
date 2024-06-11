@@ -9,4 +9,7 @@ abstract class SystemTypeAbstract extends ModelDefaultFunctions
     public $type;
 
     public $category;
+
+    public $db_status;
+
 }

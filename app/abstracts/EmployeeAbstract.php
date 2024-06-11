@@ -39,4 +39,7 @@ abstract class EmployeeAbstract extends ModelDefaultFunctions
     public $rfid;
 
     public $gsis;
+
+    public $db_status;
+
 }

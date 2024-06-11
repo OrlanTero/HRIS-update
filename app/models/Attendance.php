@@ -8,6 +8,8 @@ class Attendance extends AttendanceAbstract
 {
     protected $CONNECTION;
 
+    public $employee;
+
     public function __construct($userData = [])
     {
         global $CONNECTION;
@@ -19,6 +21,8 @@ class Attendance extends AttendanceAbstract
 
     private function init(): void
     {
+        global $APPLICATION;
 
+        $this->employee = $APPLICATION->FUNCTIONS->EMPLOYEE_CONTROL->get($this->employee_id, true);
     }
 }

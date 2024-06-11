@@ -16,4 +16,7 @@ class EmploymentControl extends ControlDefaultFunctions
           "into" => ['firstname', 'lastname', 'middlename']],
         "position", "department", "e_type"];
 
+    protected $CATEGORY = \ActivityLogCategories::EMPLOYMENT;
+
+
 }

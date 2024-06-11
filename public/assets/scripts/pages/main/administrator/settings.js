@@ -2,8 +2,8 @@
 import MenuBarListener from "../../../classes/components/MenuBarListener.js";
 import {TableListener} from "../../../classes/components/TableListener.js";
 import Popup from "../../../classes/components/Popup.js";
-import {ListenToForm, ManageComboBoxes} from "../../../modules/component/Tool.js";
-import {AddRecord} from "../../../modules/app/SystemFunctions.js";
+import {ListenToForm, ListenToYearAndPeriodAsOptions, ManageComboBoxes} from "../../../modules/component/Tool.js";
+import {AddRecord, EditRecord} from "../../../modules/app/SystemFunctions.js";
 
 function ManageSystemTypes() {
     const systemTypesTables = document.querySelectorAll(".system_type_table .main-table-container.table-component");
@@ -89,7 +89,7 @@ function ManageServiceDeductionTable() {
                 ListenToForm(form, function (data) {
                     data.category = category;
 
-                    AddRecord("system_types", {data: JSON.stringify(data)}).then((res) => {
+                    AddRecord("service_deduction", {data: JSON.stringify(data)}).then((res) => {
                         popup.Remove();
                     })
                 })
@@ -135,9 +135,34 @@ function ManageServiceDeductionTable() {
     }
 }
 
+function ManageYPM() {
+    const form = document.querySelector("form.year-and-month");
+    let options = null;
+
+    const check = ListenToForm(form, function (data) {
+        EditRecord("profile", {data: JSON.stringify(options)}).then((res) => {
+            NewNotification({
+                title: res.code === 200 ? 'Success' : 'Failed',
+                message: res.code === 200 ? 'Successfully Updated' : 'Task Failed to perform!'
+            }, 3000, res.code === 200 ? NotificationType.SUCCESS : NotificationType.ERROR)
+        })
+    })
+
+    ListenToYearAndPeriodAsOptions(form, function (op) {
+        options = op;
+
+        check(true);
+    })
+    
+
+
+    ManageComboBoxes()
+}
+
 function ManageTables() {
     ManageSystemTypes();
     ManageServiceDeductionTable();
+    ManageYPM();
 }
 
 function Init() {

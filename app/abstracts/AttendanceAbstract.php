@@ -15,6 +15,7 @@ abstract class AttendanceAbstract extends ModelDefaultFunctions
     public $day;
 
     public $hours;
+    public $db_status;
 
     public $date_created;
 }

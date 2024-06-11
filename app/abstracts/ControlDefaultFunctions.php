@@ -19,6 +19,8 @@ abstract class ControlDefaultFunctions
     protected $SEARCH_LOOKUP = [];
     protected $MODEL_CLASS;
 
+    protected $CATEGORY;
+
      public function __construct()
     {
         global $SESSION;
@@ -53,6 +55,19 @@ abstract class ControlDefaultFunctions
         return new Response($insert ? 200 : 204, $insert ? "Data Successfully Inserted" : "Activity has an error", ['id' => $insert]);
     }
 
+    public function addRecordWithLog($activity, $message = "")
+    {
+        global $ACTIVITY_CONTROL;
+
+        $insert = $this->CONNECTION->Insert($this->TABLE_NAME, $activity, true);
+
+        $response = new Response($insert ? 200 : 204, $insert ? "Data Successfully Inserted" : "Activity has an error", ['id' => $insert]);
+
+        $ACTIVITY_CONTROL->insert($this->CATEGORY, \ActivityLogActionTypes::INSERT, $response->code, $response->body['id'], $message);
+
+        return $response;
+    }
+
     public function filterTableRecord($data)
     {
         $dateData = $data['dateData'];
@@ -73,7 +88,7 @@ abstract class ControlDefaultFunctions
             }
         }
 
-        return $this->CONNECTION->FilterMultiConditionBetweenDates($this->TABLE_NAME, $filter, $dateData,  $limitData,true);
+        return $this->CONNECTION->FilterMultiConditionBetweenDates($this->TABLE_NAME, $this->TABLE_PRIMARY_ID, $filter, $dateData,  $limitData,true);
     }
 
     public function addRecordRemoveIfExist($activity)
@@ -85,9 +100,15 @@ abstract class ControlDefaultFunctions
             return new Response($insert ? 200 : 204, $insert ? "Data Successfully Inserted" : "Activity has an error", ['id' => $insert]);
         }
 
-        $remove = $this->removeRecord($already->body['id']);
 
-        return new Response($remove ? 200 : 204, $remove ? "Data Successfully Deleted" : "UnFavorite has an error", ['id' => -1]);
+        try {
+            $remove = $this->removeRecord($already->body['id']);
+
+            return new Response($remove ? 200 : 204, $remove ? "Data Successfully Deleted" : "UnFavorite has an error", ['id' => -1]);
+        } catch (\Exception $exception) {
+
+            return new Response(405, "Failed to delete!");
+        }
     }
 
     public function alreadyExists($record)
@@ -103,10 +124,52 @@ abstract class ControlDefaultFunctions
         return new Response($update ? 200 : 204, $update ? "Successfully Edited" : "Updating encounter an error");
     }
 
+    public function editRecordWithLog($id, $record, $message = "")
+    {
+        global $ACTIVITY_CONTROL;
+
+        $update = $this->CONNECTION->Update($this->TABLE_NAME, $record, [$this->TABLE_PRIMARY_ID => $id]);
+        $response =  new Response($update ? 200 : 204, $update ? "Successfully Edited" : "Updating encounter an error");
+
+        $ACTIVITY_CONTROL->insert($this->CATEGORY, \ActivityLogActionTypes::UPDATE, $response->code, $id, $message);
+
+        return $response;
+    }
+
+    public function editRecordWhere($where, $record)
+    {
+        $update = $this->CONNECTION->Update($this->TABLE_NAME, $record, $where);
+        return new Response($update ? 200 : 204, $update ? "Successfully Edited" : "Updating encounter an error");
+    }
+
+    public function editRecordWhereMulticonditinal($where, $record)
+    {
+        $update = $this->CONNECTION->UpdateMultiCondition($this->TABLE_NAME, $record, $where);
+        return new Response($update ? 200 : 204, $update ? "Successfully Edited" : "Updating encounter an error");
+    }
+
     public function removeRecord($id)
     {
+        try {
+            $remove = $this->CONNECTION->Delete($this->TABLE_NAME, [$this->TABLE_PRIMARY_ID => $id]);
+
+            return new Response($remove ? 200 : 204, $remove ? "Successfully Removed" : "Removing encounter an error");
+        } catch (\Exception $exception) {
+            return new Response(400, "Failed to remove");
+        }
+    }
+
+    public function removeRecordWithLog($id, $message = "")
+    {
+        global $ACTIVITY_CONTROL;
+
         $remove = $this->CONNECTION->Delete($this->TABLE_NAME, [$this->TABLE_PRIMARY_ID => $id]);
-        return new Response($remove ? 200 : 204, $remove ? "Successfully Removed" : "Removing encounter an error");
+
+        $response = new Response($remove ? 200 : 204, $remove ? "Successfully Removed" : "Removing encounter an error");
+
+        $ACTIVITY_CONTROL->insert($this->CATEGORY, \ActivityLogActionTypes::DELETE, $response->code, $id, $message);
+
+        return $response;
     }
 
     public function removeRecords($ids)
@@ -127,16 +190,92 @@ abstract class ControlDefaultFunctions
         return new Response($success > 0  ? 200 : 204, $success > 0 ? $success . " Successfully Removed, " . $failed . ' Failed' : "Removing encounter an error");
     }
 
-    public function getAllRecords($AS_OBJECT)
+    public function removeRecordsWithLog($ids, $message = "")
     {
-        $records = $this->CONNECTION->Select($this->TABLE_NAME, null, true);
+        global $ACTIVITY_CONTROL;
+        $success = 0;
+        $failed = 0;
 
-        return $AS_OBJECT ? array_map(/**
+        foreach ($ids as $id) {
+            $remove = $this->removeRecord($id);
+
+            if ($remove->code === 200) {
+                $success++;
+            } else {
+                $failed++;
+            }
+        }
+
+        $response = new Response($success > 0  ? 200 : 204, $success > 0 ? $success . " Successfully Removed, " . $failed . ' Failed' : "Removing encounter an error");
+
+        $ACTIVITY_CONTROL->insert($this->CATEGORY, \ActivityLogActionTypes::DELETE, $response->code, implode($ids), $message);
+
+        return $response;
+    }
+
+    public function NewArrayInstance($records, $asObject) {
+        return $asObject ? array_map(/**
          * @throws ReflectionException
          */ function ($record) {
             return $this->newInstanceOfModel($record);
         }, $records) : $records;
     }
+
+    public function getAllRecords($AS_OBJECT)
+    {
+        $records = $this->CONNECTION->Select($this->TABLE_NAME, null, true);
+
+        return $this->NewArrayInstance($records, $AS_OBJECT);
+    }
+
+    public function getLatestRecords($limit, $AS_OBJECT, $WHERE = null, $col = "date_created")
+    {
+        $records = $this->CONNECTION->SelectMultiCondition($this->TABLE_NAME, $WHERE, true, $limit, ' ORDER BY ' . $col);
+
+        return $this->NewArrayInstance($records, $AS_OBJECT);
+    }
+
+    public function getAllToday($datecol, $AS_OBJECT)
+    {
+        $records = $this->CONNECTION->SelectToday($this->TABLE_NAME, null, $datecol, true);
+
+        return $this->NewArrayInstance($records, $AS_OBJECT);
+    }
+
+    public function getAllTodayWhere($WHERE, $datecol, $AS_OBJECT)
+    {
+        $records = $this->CONNECTION->SelectToday($this->TABLE_NAME, $WHERE, $datecol, true);
+
+        return $this->NewArrayInstance($records, $AS_OBJECT);
+    }
+
+    public function getAllThisWeekWhere($WHERE, $datecol, $AS_OBJECT)
+    {
+        $records = $this->CONNECTION->SelectThisWeek($this->TABLE_NAME, $WHERE, $datecol, true);
+
+        return $this->NewArrayInstance($records, $AS_OBJECT);
+    }
+
+    public function getAllThisYearWhere($WHERE, $datecol, $AS_OBJECT)
+    {
+        $records = $this->CONNECTION->SelectThisYear($this->TABLE_NAME, $WHERE, $datecol, true);
+
+        return $this->NewArrayInstance($records, $AS_OBJECT);
+    }
+    public function getAllThisWeek($datecol, $AS_OBJECT)
+    {
+        $records = $this->CONNECTION->SelectThisWeek($this->TABLE_NAME, null, $datecol, true);
+
+        return $this->NewArrayInstance($records, $AS_OBJECT);
+    }
+
+    public function getAllThisYear($datecol, $AS_OBJECT)
+    {
+        $records = $this->CONNECTION->SelectThisYear($this->TABLE_NAME, null, $datecol, true);
+
+        return $this->NewArrayInstance($records, $AS_OBJECT);
+    }
+
 
     public function searchRecords($SEARCH, $AS_OBJECT, $WHERE = [])
     {
@@ -163,4 +302,10 @@ abstract class ControlDefaultFunctions
             return $this->newInstanceOfModel($record);
         }, $records) : $records;
     }
+    public function getOnlyRecord($WHERE, $AS_OBJECT)
+    {
+        $record = $this->CONNECTION->Select($this->TABLE_NAME, count($WHERE) > 0 ? $WHERE : null, false);
+        return $AS_OBJECT ? $this->newInstanceOfModel($record) : $record;
+    }
+
 }

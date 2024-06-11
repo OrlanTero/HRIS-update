@@ -1,7 +1,14 @@
-import {AddRecord, EditRecord} from "./SystemFunctions.js";
+import {AddRecord, EditRecord, SearchRecords} from "./SystemFunctions.js";
 import Popup from "../../classes/components/Popup.js";
-import {Ajax, GetComboValue, ListenToForm, ManageComboBoxes} from "../component/Tool.js";
+import {addHtml, Ajax, GetComboValue, ListenToForm, ManageComboBoxes} from "../component/Tool.js";
 import {TableListener} from "../../classes/components/TableListener.js";
+
+export const AUTHENTICATION_TYPE = {
+    NO: "NO_AUTHENTICATION",
+    USERNAME_PASSWORD: "USERNAME_PASSWORD",
+    PIN_AUTHENTICATION: "PIN_AUTHENTICATION",
+    EMAIL_AUTHENTICATION: "EMAIL_AUTHENTICATION",
+};
 
 export function CreateNewEmployee(employee, bank) {
     return new Promise((resolve) => {
@@ -98,6 +105,18 @@ export function GetEmployee(id) {
         })
     })
 }
+export function GetOverAllLoanBalanceOfEmployee(id) {
+    return new Promise((resolve) => {
+        Ajax({
+            url: "/api/post/GetOverAllLoanBalanceOfEmployee",
+            type: "POST",
+            data: {id},
+            success: (res) => {
+              resolve(res);
+            }
+        })
+    })
+}
 
 export function GetEmployment(id) {
     return new Promise((resolve) => {
@@ -149,16 +168,65 @@ export function GetBank(id) {
         })
     })
 }
+export function GetRequisition(id) {
+    return new Promise((resolve) => {
+        Ajax({
+            url: "/api/post/GetRequisition",
+            type: "POST",
+            data: {id},
+            success: (res) => {
+                try {
+                    resolve(JSON.parse(res));
+                } catch (e) {
+                    resolve(null);
+                }
+            }
+        })
+    })
+}
+export function GetLoans(ids) {
+    return new Promise((resolve) => {
+        Ajax({
+            url: "/api/post/GetLoans",
+            type: "POST",
+            data: {ids: JSON.stringify(ids)},
+            success: (res) => {
+                console.log(res)
+                try {
+                    resolve(JSON.parse(res));
+                } catch (e) {
+                    resolve(null);
+                }
+            }
+        })
+    })
+}
 
-
-export function SelectEmployee() {
-    const popup = new Popup("employees/select_employee", null, {
+export function GetVatValues(vat_or_not) {
+    return new Promise((resolve) => {
+        Ajax({
+            url: "/api/post/GetVatValues",
+            type: "POST",
+            data: {vat_or_not},
+            success: (res) => {
+                console.log(res)
+                try {
+                    resolve(JSON.parse(res));
+                } catch (e) {
+                    resolve(null);
+                }
+            }
+        })
+    })
+}
+export function SelectRequisition() {
+    const popup = new Popup("requisition/select_requisition", null, {
         backgroundDismiss: false,
     });
 
     return new Promise((resolve) => {
         const SelectRequest = (id) => {
-            GetEmployee(id).then((employee) => resolve(employee)).finally(() => {
+            GetRequisition(id).then((employee) => resolve(employee)).finally(() => {
                 popup.Remove();
             });
         }
@@ -196,6 +264,134 @@ export function SelectEmployee() {
                         name: "select-request",
                         action: SelectRequest,
                         single: true
+                    },
+                ]);
+            });
+
+        })
+    })
+}
+
+export function SelectEmployee() {
+    const popup = new Popup("employees/select_employee", null, {
+        backgroundDismiss: false,
+    });
+
+    return new Promise((resolve) => {
+        const SelectRequest = (id) => {
+            GetEmployee(id).then((employee) => resolve(employee)).finally(() => {
+                popup.Remove();
+            });
+        }
+
+        function Search(toSearch, filter) {
+            SearchRecords("employees", toSearch, filter).then((HTML) => UpdateTable(HTML));
+        }
+
+        function UpdateTable(TABLE_HTML) {
+            const TABLE_BODY = popup.ELEMENT.querySelector(".main-table-body");
+
+            addHtml(TABLE_BODY, TABLE_HTML);
+
+            ManageTable();
+        }
+
+        function ManageTable() {
+            const TABLE = popup.ELEMENT.querySelector(".main-table-container.items-component");
+
+            if (!TABLE) return;
+
+            const TABLE_LISTENER = new TableListener(TABLE);
+
+            TABLE_LISTENER.singularSelection = true;
+
+            TABLE_LISTENER.addListeners({
+                none: {
+                    view: [],
+                    remove: ["select-request"],
+                },
+
+                select: {
+                    view: ["select-request"],
+                },
+                selects: {
+                    view: [],
+                    remove:  ["select-request"],
+                },
+            })
+
+            TABLE_LISTENER.init();
+
+            TABLE_LISTENER.listen(() => {
+                TABLE_LISTENER.addButtonListener([
+                    {
+                        name: "select-request",
+                        action: SelectRequest,
+                        single: true
+                    },
+                ]);
+            });
+        }
+
+        popup.Create().then((pop) => {
+            popup.Show();
+
+            ManageTable();
+
+            const searchEngine = popup.ELEMENT.querySelector(".search-engine input[name=search-records]");
+
+            searchEngine.addEventListener("input", () => {
+                Search(searchEngine.value)
+            })
+        })
+    })
+}
+
+export function SelectLoans(id) {
+    const popup = new Popup("loan_manager/select_loans", {id}, {
+        backgroundDismiss: false,
+    });
+
+    return new Promise((resolve) => {
+        const SelectRequest = (ids) => {
+
+            GetLoans(ids).then((loans) => resolve(loans)).finally(()=> {
+                popup.Remove();
+            });
+        }
+
+        popup.Create().then((pop) => {
+            popup.Show();
+
+            const TABLE = pop.ELEMENT.querySelector(".main-table-container.items-component");
+
+            if (!TABLE) return;
+
+            const TABLE_LISTENER = new TableListener(TABLE);
+
+            TABLE_LISTENER.singularSelection = false;
+
+            TABLE_LISTENER.addListeners({
+                none: {
+                    view: [],
+                    remove: ["select-request"],
+                },
+                select: {
+                    view: ["select-request"],
+                },
+                selects: {
+                    view:  ["select-request"],
+                },
+            })
+
+            TABLE_LISTENER.init();
+
+            TABLE_LISTENER.listen(() => {
+                TABLE_LISTENER.addButtonListener([
+                    {
+                        name: "select-request",
+                        action: SelectRequest,
+                        single: false
                     },
                 ]);
             });
@@ -269,10 +465,20 @@ export function SelectClient() {
             });
         }
 
-        popup.Create().then((pop) => {
-            popup.Show();
+        function Search(toSearch, filter) {
+            SearchRecords("clients", toSearch, filter).then((HTML) => UpdateTable(HTML));
+        }
 
-            const TABLE = pop.ELEMENT.querySelector(".main-table-container.items-component");
+        function UpdateTable(TABLE_HTML) {
+            const TABLE_BODY = popup.ELEMENT.querySelector(".main-table-body");
+
+            addHtml(TABLE_BODY, TABLE_HTML);
+
+            ManageTable();
+        }
+
+        function ManageTable() {
+            const TABLE = popup.ELEMENT.querySelector(".main-table-container.items-component");
 
             if (!TABLE) return;
 
@@ -305,7 +511,18 @@ export function SelectClient() {
                     },
                 ]);
             });
+        }
 
+        popup.Create().then((pop) => {
+            popup.Show();
+
+            ManageTable();
+
+            const searchEngine = popup.ELEMENT.querySelector(".search-engine input[name=search-records]");
+
+            searchEngine.addEventListener("input", () => {
+                Search(searchEngine.value)
+            })
         })
     })
 }
@@ -320,6 +537,105 @@ export function GetColumnsTable(tableHeader, tableBody) {
             url: "/api/post/GetColumnsTable",
             type: "POST",
             data: {tableHeader, tableBody},
+            success: (res) => {
+                try {
+                    resolve(JSON.parse(res));
+                } catch (e) {
+                    resolve(null);
+                }
+            }
+        })
+    })
+}
+
+export function GetAvailablePeriodAttendance(client) {
+    return new Promise((resolve) => {
+        Ajax({
+            url: "/api/post/GetAvailablePeriodAttendance",
+            type: "POST",
+            data: {client},
+            success: (res) => {
+                try {
+                    resolve(JSON.parse(res));
+                } catch (e) {
+                    resolve(null);
+                }
+            }
+        })
+    })
+}
+
+export function GetPayrollTableOf(attendance_group) {
+    return new Promise((resolve) => {
+        Ajax({
+            url: "/components/containers/attendance_group/getPayrollTableOf",
+            type: "POST",
+            data: {attendance_group},
+            success: (res) => {
+                resolve(res);
+            }
+        })
+    })
+}
+
+export function SetAuthentication(type, data) {
+    return new Promise((resolve) => {
+        Ajax({
+            url: "/api/post/SetAuthentication",
+            type: "POST",
+            data: {type, data: JSON.stringify(data)},
+            success: (res) => {
+                console.log(res)
+                try {
+                    resolve(JSON.parse(res));
+                } catch (e) {
+                    resolve(null);
+                }
+            }
+        })
+    })
+}
+
+export function TryAuthenticate(type, data) {
+    return new Promise((resolve) => {
+        Ajax({
+            url: "/api/post/TryAuthenticate",
+            type: "POST",
+            data: {type, data: JSON.stringify(data)},
+            success: (res) => {
+                try {
+                    resolve(JSON.parse(res));
+                } catch (e) {
+                    resolve(null);
+                }
+            }
+        })
+    })
+}
+
+export function GetReports(type, data) {
+    return new Promise((resolve) => {
+        Ajax({
+            url: "/api/post/GetReports",
+            type: "POST",
+            data: {type, data: JSON.stringify(data)},
+            success: (res) => {
+                try {
+                    resolve(JSON.parse(res));
+                } catch (e) {
+                    resolve(null);
+                }
+            }
+        })
+    })
+}
+
+export function ConfirmAuthenticationVerification(email, verification) {
+    return new Promise((resolve) => {
+        Ajax({
+            url: "/api/post/ConfirmAuthenticationVerification",
+            type: "POST",
+            data: {email, verification},
             success: (res) => {
                 try {
                     resolve(JSON.parse(res));

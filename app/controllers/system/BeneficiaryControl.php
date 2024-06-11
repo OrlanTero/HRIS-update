@@ -11,4 +11,6 @@ class BeneficiaryControl extends ControlDefaultFunctions
     protected $TABLE_NAME = "beneficiaries";
     protected $TABLE_PRIMARY_ID = "beneficiary_id";
     protected $SEARCH_LOOKUP = [];
+    protected $CATEGORY = \ActivityLogCategories::BENEFICIARY;
+
 }

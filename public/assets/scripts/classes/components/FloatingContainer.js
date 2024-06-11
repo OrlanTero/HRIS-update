@@ -48,7 +48,6 @@ export class FloatingContainer {
             className: "absolute-floating-container",
         });
     }
-3
     async showAt(button, listeners = {}, position = POSITIONS.top) {
         this.currentListeners = listeners;
 
@@ -139,11 +138,11 @@ export class FloatingContainer {
             this.currentListener.click = FNOnClickOutside(
                 button,
                 () => {
-                    HideShowComponent(this.element, false);
+                    HideShowComponent(this.element, false, this.options.flex);
                 },
                 [button, ...this.options.excepts],
                 () => {
-                    HideShowComponent(this.element, true);
+                    HideShowComponent(this.element, true, this.options.flex);
                 }
             );
         }
@@ -151,7 +150,7 @@ export class FloatingContainer {
         if (!this.activated) {
             this.activated = true;
         } else {
-            HideShowComponent(this.element, true);
+            HideShowComponent(this.element, true, this.options.flex);
         }
 
         place();
@@ -183,7 +182,7 @@ export class FloatingContainer {
     }
 
     hide() {
-        HideShowComponent(this.element);
+        HideShowComponent(this.element, false);
 
         this.showed = false;
     }

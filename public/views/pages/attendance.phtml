@@ -81,7 +81,26 @@ $BUTTON = false;
                                 </div>
                             </div>
                             <div class="table-buttons">
-                                <div class="left"></div>
+                                <div class="left">
+                                    <div class="content-flex year-period">
+                                        <div class="form-group tooltip">
+                                            <div class="tooltiptext">
+                                                <span>Year</span>
+                                            </div>
+                                            <div class="error-container">
+                                                <?= CreateComboBox("year", "Year", GetYearsFrom(1990)) ?>
+                                            </div>
+                                        </div>
+                                        <div class="form-group tooltip">
+                                            <div class="tooltiptext">
+                                                <span>Period</span>
+                                            </div>
+                                            <div class="error-container">
+                                                <?= CreateComboBox("period", "Period", []) ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="right">
                                     <div class="icon-button table-button show-component" data-name="view-request">
                                         <div class="icon">

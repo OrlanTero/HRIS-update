@@ -11,4 +11,7 @@ class BankControl extends ControlDefaultFunctions
     protected $TABLE_NAME = "banks";
     protected $TABLE_PRIMARY_ID = "bank_id";
     protected $SEARCH_LOOKUP = ["name", "branch"];
+
+    protected $CATEGORY = \ActivityLogCategories::BANKS;
+
 }

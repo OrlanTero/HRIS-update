@@ -8,9 +8,7 @@ class Client extends ClientAbstract
 {
     protected $CONNECTION;
 
-    /**
-     * @type DeployedEmployee
-     */
+
     public $deployed_employees;
 
     public function __construct($userData = [])
@@ -29,5 +27,16 @@ class Client extends ClientAbstract
         $control = $APPLICATION->FUNCTIONS->DEPLOYED_EMPLOYEE_CONTROL;
 
         $this->deployed_employees = $control->filterRecords(['client_id' => $this->client_id], true);
+    }
+
+    public function getDeployedEmployee($employee_id)
+    {
+        foreach ($this->deployed_employees as $deployed_employee) {
+            if ($deployed_employee['employee_id'] == $employee_id) {
+                return $deployed_employee;
+            }
+        }
+
+        return null;
     }
 }

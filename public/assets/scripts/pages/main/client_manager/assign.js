@@ -1,20 +1,21 @@
 import {
     addAttr,
     addHtml, append, CreateElement,
-    HideShowComponent,
+    HideShowComponent, ListenToCombo,
     ListenToForm,
     MakeID,
-    ManageComboBoxes, ResetActiveComponent, SetActiveComponent
+    ManageComboBoxes, ResetActiveComponent, SetActiveComponent, SetNewComboItems
 } from "../../../modules/component/Tool.js";
 import Popup from "../../../classes/components/Popup.js";
 import {TableListener} from "../../../classes/components/TableListener.js";
 import {
-    AddRecord,  PostContainerRequest,
-    RemoveRecords,
+    AddRecord, EditRecord, GetPeriodOfAYear, PostContainerRequest,
+    RemoveRecords, RemoveRecordsBatch,
     UpdateRecords
 } from "../../../modules/app/SystemFunctions.js";
 import {SelectEmployee, SelectEmployment} from "../../../modules/app/Administrator.js";
 import {NewNotification, NotificationType} from "../../../classes/components/NotificationPopup.js";
+import AlertPopup, {AlertTypes} from "../../../classes/components/AlertPopup.js";
 
 const TARGET = "employee_deployment";
 
@@ -31,26 +32,75 @@ function UpdateData() {
 }
 
 function DeleteRequests(ids) {
-    const popup = new Popup("category/deleteRecord", null, {
+    const popup = new AlertPopup({
+        primary: "Remove deployment?",
+        secondary: `${ids.length} selected`,
+        message: "You will remove this employee to selected client."
+    }, {
+        alert_type: AlertTypes.YES_NO,
+    });
+
+    popup.AddListeners({
+        onYes: () => {
+            RemoveRecordsBatch(TARGET, {data: JSON.stringify(ids)}).then((res) => {
+                NewNotification({
+                    title: res.code === 200 ? 'Success' : 'Failed',
+                    message: res.code === 200 ? 'Successfully Deleted Data' : 'Task Failed to perform!'
+                }, 3000, res.code === 200 ? NotificationType.SUCCESS : NotificationType.ERROR)
+
+                UpdateData();
+            })
+        }
+    })
+
+    popup.Create().then(() => { popup.Show() })
+}
+
+function ViewRequests(id) {
+    const popup = new Popup( "assign_employees/view_assignment", {id}, {
         backgroundDismiss: false,
     });
 
-    popup.Create().then((pop) => {
+    popup.Create().then(((pop) => {
         popup.Show();
 
-        const no = pop.ELEMENT.querySelector(".no-btn");
-        const yes = pop.ELEMENT.querySelector(".yes-btn");
+        const form = pop.ELEMENT.querySelector("form.form-control");
+        const selectEmployee = pop.ELEMENT.querySelector(".select-employee");
+        const employeeInput = form.querySelector("input[name=employee]");
+        let selectedEployee = null;
 
-        no.addEventListener("click", () => {
-            popup.Remove();
+        selectEmployee.addEventListener("click", function() {
+            SelectEmployment().then((employment) => {
+                selectedEployee = employment;
+
+                employeeInput.value = employment.employee.name;
+            })
         });
 
-        yes.addEventListener("click", () => {
-            RemoveRecords(TARGET, ids.map((id) => {
-                return {id: id}
-            })).then(() => UpdateData().then(() => popup.Remove()))
-        });
-    })
+        ListenToForm(form, function (data) {
+
+            if (selectedEployee !== null) {
+                data['employment_id'] = selectedEployee.employment_id;
+                data['client_id'] = SELECTED_CLIENT;
+            }
+
+            delete data['employee'];
+
+            EditRecord(TARGET, {id, data: JSON.stringify(data)}).then((res) => {
+                NewNotification({
+                    title: res.code === 200 ? 'Success' : 'Failed',
+                    message: res.code === 200 ? 'Successfully Edited Deployment' : 'Task Failed to perform!'
+                }, 3000, res.code === 200 ? NotificationType.SUCCESS : NotificationType.ERROR)
+
+                popup.Remove();
+
+                UpdateData()
+            })
+        })
+
+
+        ManageComboBoxes()
+    }))
 }
 
 function AddRequest(id) {
@@ -132,7 +182,7 @@ function ManageTable() {
             },
             {
                 name: "view-request",
-                action: () => {},
+                action: ViewRequests,
                 single: true
             },
             {
@@ -154,6 +204,7 @@ function ShowDeployedEmployeeOf(id) {
 function ManageSelections() {
     const parent = document.querySelector(".selection-parent");
     const items = parent.querySelectorAll(".item-list");
+    const searchEngine = document.querySelector('.search-engine input[name=search-records]');
 
     const resetItems = () => {
         ResetActiveComponent(items);
@@ -167,6 +218,24 @@ function ManageSelections() {
 
         SELECTED_CLIENT = id;
     }
+
+    const doSearch = (toSearch) => {
+        if (toSearch.length > 0 ) {
+            for (const item of items) {
+                HideShowComponent(item, item.innerHTML.trim().toLowerCase().search(toSearch) >= 0);
+            }
+        } else {
+            for (const item of items) {
+                HideShowComponent(item, true);
+            }
+        }
+    }
+
+    searchEngine.addEventListener("input", function () {
+        const __search = searchEngine.value.trim().toLowerCase();
+
+        doSearch(__search);
+    })
 
     for (const item of items) {
         item.addEventListener("click", function () {
@@ -184,6 +253,7 @@ function ManageSelections() {
 
         selectItem(first);
 
+        ShowDeployedEmployeeOf(first.getAttribute("data-id"))
     }
 
 }

@@ -51,8 +51,6 @@ $ALLEMPLOYEES = $employeeControl->getAllRecords(true);
                     <div class="selector-header">
                         <div class="title">
                             <h2>Employees</h2>
-                        </div>
-                        <div class="content-flex">
                             <div class="search-engine-parent full-width">
                                 <div class="search-engine">
                                     <div class="icon">
@@ -61,6 +59,8 @@ $ALLEMPLOYEES = $employeeControl->getAllRecords(true);
                                     <input type="text" name="search-records" placeholder="Search Records...">
                                 </div>
                             </div>
+                        </div>
+                        <div class="content-flex year-period">
                             <div class="form-group tooltip">
                                 <div class="tooltiptext">
                                     <span>Year</span>
@@ -74,7 +74,7 @@ $ALLEMPLOYEES = $employeeControl->getAllRecords(true);
                                     <span>Period</span>
                                 </div>
                                 <div class="error-container">
-                                    <?= CreateComboBox("period", "Period", [], false) ?>
+                                    <?= CreateComboBox("period", "Period", []) ?>
                                 </div>
                             </div>
                         </div>
@@ -102,23 +102,7 @@ $ALLEMPLOYEES = $employeeControl->getAllRecords(true);
 
                                 </div>
                                 <div class="right">
-                                    <div class="icon-button table-button show-component" data-name="view-request">
-                                        <div class="icon">
-                                            <?= UseIcon("eye-thin") ?>
-                                        </div>
-                                    </div>
 
-                                    <div class="icon-button table-button show-component" data-name="delete-request">
-                                        <div class="icon">
-                                            <?= UseIcon("trash-thin") ?>
-                                        </div>
-                                    </div>
-
-                                    <div class="icon-button table-button show-component" data-name="add-request">
-                                        <div class="icon">
-                                            <?= UseIcon("plus-thin") ?>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
 
@@ -134,7 +118,7 @@ $ALLEMPLOYEES = $employeeControl->getAllRecords(true);
 
     <?php include "public/views/pages/structures/html_pipes.phtml" ?>
 
-<!--    <script type="module" src="/public/assets/scripts/pages/main/client_manager/assign.js"></script>-->
+    <script type="module" src="/public/assets/scripts/pages/main/client_manager/employee_account.js"></script>
 
     <?php include "public/views/pages/structures/html_closing_parent.phtml" ?>
 

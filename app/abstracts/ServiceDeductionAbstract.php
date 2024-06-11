@@ -15,4 +15,9 @@ abstract class ServiceDeductionAbstract extends ModelDefaultFunctions
     public $er;
 
     public $ee;
+
+    public $category;
+
+    public $db_status;
+
 }

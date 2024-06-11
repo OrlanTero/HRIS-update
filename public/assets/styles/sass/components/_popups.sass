@@ -91,6 +91,9 @@
 
   .popup-footer
     padding: 10px
+    &.right-side-flex
+      display: flex
+      justify-content: space-between
 
     .button-flex
       display: flex
@@ -120,6 +123,10 @@
   background: #ffffff
   box-shadow: $global_boxshadow
   overflow-x: hidden
+  &.go-large
+    min-width: 1400px
+    max-width: 1000px
+    min-height: 600px
 
   .popup-top
     border-bottom: 1px solid #ebeeee
@@ -162,6 +169,8 @@
     min-height: 400px !important
     max-height: 400px
     overflow: auto !important
+    &.auto-size
+      min-height: auto !important
 
   .popup-footer
     padding: 10px

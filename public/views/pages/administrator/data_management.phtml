@@ -3,8 +3,11 @@
 global $APPLICATION, $NO_TYPE_TABLE_HEADER_TEXT, $NO_TYPE_TABLE_BODY_KEY;
 global $SERVICES_DEDUCTION_TABLE_BODY_KEY, $SERVICES_DEDUCTION_TABLE_HEADER_TEXT;
 
+use Application\controllers\system\UserProfileControl;
+
 $systemTypeControl = $APPLICATION->FUNCTIONS->SYSTEM_TYPES_CONTROL;
 $serviceDeductionTypeControl = $APPLICATION->FUNCTIONS->SERVICE_DEDUCTION_CONTROL;
+$control = $control = new UserProfileControl();
 
 $LOANTYPES = $systemTypeControl->filterRecords(["category" => "loan_type"], false);
 $EXPENSESTYPES = $systemTypeControl->filterRecords(["category" => "expense_type"], false);
@@ -14,6 +17,8 @@ $PAGIBIG = $serviceDeductionTypeControl->filterRecords(["category" => "pagibig"]
 
 $ID = "employment_id";
 $BUTTON = false;
+
+$profile = $control->getProfile();
 ?>
 
 <?php include "public/views/pages/structures/html_headings.phtml" ?>
@@ -51,7 +56,7 @@ $BUTTON = false;
             <div class="main-body-body">
 
                 <div class="menu-tab-control-parent menu-bar-settings">
-                    <?= CreateMenuBarHeader("settings-table",["Loan Type", "Expense Type", "SSS", "PH", "Pag-ibig", "Y & P & M"]) ?>
+                    <?= CreateMenuBarHeader("settings-table",["Loan Type", "Expense Type", "SSS", "PH", "Pag-ibig", "Year, Period and Month"]) ?>
 
                     <div class="menu-content-not-official">
                         <div class="menu-body-item system_type_table" data-category="loan_type">
@@ -234,12 +239,54 @@ $BUTTON = false;
                             </div>
                         </div>
 
-                        <div class="menu-body-item">
+                        <div class="menu-body-item service_deduction_table" data-category="year_period_and_month">
+                            <div class="data-table-content">
+                                <div class="main-table-container table-component full">
+                                    <div class="main-table-header">
+                                        <div class="table-header">
+                                            <div class="left">
+                                                <div class="title">
+                                                    <h2>Year, Period and Month</h2>
+                                                </div>
+                                            </div>
+                                        </div>
 
+                                    </div>
+                                    <div class="main-table-body main-table-requests">
+                                        <form action="" class="form-control year-and-month">
+                                            <div class="form-group-container flex">
+                                                <div class="form-group tooltip">
+                                                    <div class="tooltiptext">
+                                                        <span>Year</span>
+                                                    </div>
+                                                    <div class="error-container">
+                                                        <?= CreateComboBox("year", "Year", GetYearsFrom(1990), false, $profile->year) ?>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group-container flex">
+                                                <div class="form-group tooltip">
+                                                    <div class="tooltiptext">
+                                                        <span>Period</span>
+                                                    </div>
+                                                    <div class="error-container">
+                                                        <?= CreateComboBox("period", "Period", GetPeriodsOfAYear($profile->year), false, $profile->period) ?>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group-container submit-group">
+                                                <div class="form-group filled-green">
+                                                    <input type="submit" value="Save">
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+
                     </div>
                 </div>
-
 
             </div>
         </div>

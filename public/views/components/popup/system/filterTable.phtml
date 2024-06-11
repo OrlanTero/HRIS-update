@@ -13,13 +13,11 @@ global ${$header}, ${$body};
 
 $control = $APPLICATION->FUNCTIONS->{$options['control']};
 $RECORDS = $control->filterTableRecord($data);
-//dr
-echo $RECORDS;
-//$ID = $options['id'];
-//$BUTTON = false;
+
+//echo $RECORDS;
+$ID = $options['id'];
 //
 //?>
-<!---->
-<?php //= CreateTable(${$header}, ${$body}, $RECORDS, $ID, $BUTTON) ?>
+<?= CreateTable(${$header}, ${$body}, $RECORDS, $ID) ?>
 
 

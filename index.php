@@ -18,6 +18,8 @@ $CONNECTION = new Connection(); //
 $SESSION = $_SESSION["session"] ?? new Session(); // handling user information // current logged in
 $APPLICATION = new Application();
 
+$ACTIVITY_CONTROL = new \Application\controllers\system\ActivityLogControl();
+
 try {
     if ($CONNECTION->Test()) {
         $APPLICATION->run();

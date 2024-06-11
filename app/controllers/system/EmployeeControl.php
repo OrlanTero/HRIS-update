@@ -10,7 +10,8 @@ class EmployeeControl extends ControlDefaultFunctions
     protected $MODEL_CLASS = Employee::class;
     protected $TABLE_NAME = "employees";
     protected $TABLE_PRIMARY_ID = "employee_id";
-    protected $SEARCH_LOOKUP = ["employee_no", "firstname", "lastname","middlename", "gender", "civil_status", "email", "mobile"];
+    protected $SEARCH_LOOKUP = ["employee_no", "firstname", "lastname","middlename", "gender", "civil_status", "email", "mobile", "address"];
+    protected $CATEGORY = \ActivityLogCategories::EMPLOYEES;
 
     public function add($data) {
         global $APPLICATION;
@@ -19,7 +20,7 @@ class EmployeeControl extends ControlDefaultFunctions
         $employee = $data["employee"];
         $bank = $data["bank"];
 
-        $insert = $this->addRecord($employee);
+        $insert = $this->addRecordWithLog($employee, "New Employee: " . $employee['lastname'] . ", " . $employee['firstname']);
 
         if ($insert->code == 200) {
 
@@ -43,7 +44,7 @@ class EmployeeControl extends ControlDefaultFunctions
 
         unset($employee['id']);
 
-        $edit = $this->editRecord($id, $employee);
+        $edit = $this->editRecordWithLog($id, $employee);
 
         foreach ($bank as $b) {
 

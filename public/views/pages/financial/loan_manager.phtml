@@ -1,16 +1,20 @@
 <?php
 
-global $APPLICATION, $PETTYCASH_TABLE_BODY_KEY, $PETTYCASH_TABLE_HEADER_TEXT;
+global $APPLICATION, $LOAN_MANAGER_TABLE_BODY_KEY, $LOAN_MANAGER_TABLE_HEADER_TEXT;
+
+use Application\models\LoanAnalyzer;
+
+$ANALYZER = new LoanAnalyzer();
 
 $control = $APPLICATION->FUNCTIONS->BANK_CONTROL;
-$RECORDS = [];
-$ID = "";
+$RECORDS = array_map(function ($record) { return (array) $record; }, $ANALYZER->get());
+$ID = "loan_id";
 $BUTTON = false;
 ?>
 
 <?php include "public/views/pages/structures/html_headings.phtml" ?>
 
-<title>Banks</title>
+<title>Loan Manager</title>
 
 <?php include "public/views/pages/structures/html_heading_closing.phtml" ?>
 
@@ -34,7 +38,7 @@ $BUTTON = false;
                 <div class="header-nav">
                     <div class="left">
                         <div class="title">
-                            <h2>Manage Banks</h2>
+                            <h2>Manage Loan Manager</h2>
                         </div>
                     </div>
                     <div class="right"></div>
@@ -47,7 +51,7 @@ $BUTTON = false;
                             <div class="table-header">
                                 <div class="left">
                                     <div class="title">
-                                        <h2>List of Banks</h2>
+                                        <h2>Loan Manager</h2>
                                     </div>
                                 </div>
                                 <div class="center">
@@ -65,37 +69,27 @@ $BUTTON = false;
                             <div class="table-buttons">
                                 <div class="left"></div>
                                 <div class="right">
-                                    <div class="icon-button table-button show-component" data-name="view-request">
+                                    <div class="icon-button table-button show-component" data-name="add-request">
                                         <div class="icon">
                                             <?= UseIcon("eye-thin") ?>
                                         </div>
                                         <div class="text">
-                                            <span>View</span>
-                                        </div>
-                                    </div>
-
-                                    <div class="icon-button table-button show-component" data-name="delete-request">
-                                        <div class="icon">
-                                            <?= UseIcon("trash-thin") ?>
-                                        </div>
-                                        <div class="text">
-                                            <span>Delete</span>
-                                        </div>
-                                    </div>
-
-                                    <div class="icon-button table-button show-component" data-name="add-request">
-                                        <div class="icon">
-                                            <?= UseIcon("plus-thin") ?>
-                                        </div>
-                                        <div class="text">
-                                            <span>New</span>
+                                            <span>View Loan Manager</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="main-table-body main-table-requests">
-                            <?= CreateTable($PETTYCASH_TABLE_HEADER_TEXT, $PETTYCASH_TABLE_BODY_KEY, $RECORDS, $ID, $BUTTON) ?>
+                            <?= CreateTable($LOAN_MANAGER_TABLE_HEADER_TEXT, $LOAN_MANAGER_TABLE_BODY_KEY, $RECORDS, $ID, $BUTTON, true, true, true, false, [
+                                    ["column" => 5, "color" => "#FEBEBF", "align" => "right"],
+                                    ["column" => 6, "color" => "#FEBEBF", "align" => "right"],
+                                    ["column" => 7, "color" => "#BEBFFF", "align" => "right"],
+                                    ["column" => 8, "color" => "#BEBFFF", "align" => "right"],
+                                    ["column" => 9, "color" => "#FAFDC6", "align" => "right"],
+                                    ["column" => 10, "color" => "#C1FEBE", "align" => "right"],
+                                    ["column" => 11, "color" => "", "align" => "right"],
+                            ]) ?>
                         </div>
                     </div>
                 </div>
@@ -105,7 +99,7 @@ $BUTTON = false;
 
     <?php include "public/views/pages/structures/html_pipes.phtml" ?>
 
-    <script type="module" src="/publ$DISBURSEMENT_TABLE_BODY_KEYic/assets/scripts/pages/main/financial/banks.js"></script>
+    <script type="module" src="/public/assets/scripts/pages/main/financial/loan_manager.js"></script>
 
     <?php include "public/views/pages/structures/html_closing_parent.phtml" ?>
 

@@ -1,6 +1,6 @@
 <?php
 global $APPLICATION, $DEPARTMENTS, $EMPLOYMENT_STATUS, $EMPLOYMENT_TYPES, $EMPLOYMENT_POSITIONS, $RESTDAYS;
-global $BENEFICIARIES_TABLE_BODY_KEY, $BENEFICIARIES_TABLE_HEADER_TEXT;
+global $BENEFICIARIES_TABLE_BODY_KEY, $BENEFICIARIES_TABLE_HEADER_TEXT, $BENEFICIARY_TYPES;
 
 $RECORDS = [];
 $ID = -1;
@@ -52,7 +52,7 @@ $BUTTON = -1;
                                 <span>Type</span>
                             </div>
                             <div class="error-container">
-                                <?= CreateComboBox("type", "Type", ["A", "B", "C"]) ?>
+                                <?= CreateComboBox("type", "Type", $BENEFICIARY_TYPES) ?>
                             </div>
                         </div>
                     </div>

@@ -109,7 +109,7 @@ $options = json_decode($_POST['options'], true);
                                                     <span>Operator</span>
                                                 </div>
                                                 <div class="error-container">
-                                                    <input type="text" name="operator" placeholder="Operator" value="==">
+                                                    <input type="text" name="operator" placeholder="Operator" value="=">
                                                 </div>
                                             </div>
                                         </div>
@@ -191,13 +191,21 @@ $options = json_decode($_POST['options'], true);
                                             <input type="number" name="limit" placeholder="Limit">
                                         </div>
                                     </div>
+                                    <div class="form-group tooltip">
+                                        <div class="tooltiptext">
+                                            <span>Order By</span>
+                                        </div>
+                                        <div class="error-container">
+                                            <?= CreateComboBox("order_by", "Order By", []) ?>
+                                        </div>
+                                    </div>
                                     <div class="input-item">
                                         <div class="form-group tooltip">
                                             <div class="tooltiptext">
-                                                <span>Order</span>
+                                                <span>Asc/Desc</span>
                                             </div>
                                             <div class="error-container">
-                                                <?= CreateComboBox("order", "Order", ["Ascending", "Descending"]) ?>
+                                                <?= CreateComboBox("order", "Asc/Desc", ["Ascending", "Descending"]) ?>
                                             </div>
                                         </div>
                                     </div>

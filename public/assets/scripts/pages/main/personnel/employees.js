@@ -2,14 +2,14 @@ import {
     addAttr,
     addHtml, append, CreateElement, generateRandomBinary,
     HideShowComponent,
-    ListenToForm,
+    ListenToForm, ListenToThisCombo, ListenToYearAndPeriodAsOptions,
     MakeID,
-    ManageComboBoxes
+    ManageComboBoxes, SetNewComboItems
 } from "../../../modules/component/Tool.js";
 import Popup from "../../../classes/components/Popup.js";
 import {TableListener} from "../../../classes/components/TableListener.js";
 import {
-    AddRecord,
+    AddRecord, FilterRecords, GetPeriodOfAYear,
     RemoveRecords, RemoveRecordsBatch,
     SearchRecords,
     UpdateRecords
@@ -22,8 +22,14 @@ import {
 } from "../../../modules/app/Administrator.js";
 import AlertPopup, { AlertTypes} from "../../../classes/components/AlertPopup.js";
 import {NewNotification, NotificationType} from "../../../classes/components/NotificationPopup.js";
-
+import FilterContainer from "../../../classes/components/FilterContainer.js";
 const TARGET = "employees";
+
+
+const OPTIONS = {
+    year: null,
+    period: null
+};
 
 function UpdateTable(TABLE_HTML) {
     const TABLE_BODY = document.querySelector(".main-table-body");
@@ -48,11 +54,16 @@ function DeleteRequests(ids) {
     popup.AddListeners({
         onYes: () => {
             RemoveRecordsBatch(TARGET, {data: JSON.stringify(ids)}).then((res) => {
-                console.log(res)
+                NewNotification({
+                    title: res.code === 200 ? 'Success' : 'Failed',
+                    message: res.code === 200 ? 'Successfully Deleted Data' : 'Task Failed to perform!'
+                }, 3000, res.code === 200 ? NotificationType.SUCCESS : NotificationType.ERROR)
+
                 UpdateData();
             })
         }
     })
+
 
     popup.Create().then(() => { popup.Show() })
 }
@@ -343,10 +354,41 @@ function ManageSearchEngine() {
         Search(searchEngine.value)
     })
 }
+function ManageButtons() {
+    // const filter = document.querySelector(".filter-button");
+    //
+    // const FLTER = new FilterContainer({}, { table: "employees", id: "employee_id", control: "EMPLOYEE_CONTROL"});
+    //
+    // FLTER.Create().then(() => FLTER.Hide());
+    //
+    // FLTER.Load("EMPLOYEES_TABLE_HEADER_TEXT", "EMPLOYEES_TABLE_BODY_KEY")
+    //
+    // FLTER.AddListeners({onFilter: function (data) {
+    //         UpdateTable(data);
+    //     }});
+    //
+    // filter.addEventListener("click", function () {
+    //     FLTER.Show();
+    // })
 
+}
+
+function Listens() {
+    const yearPeriod = document.querySelector(".year-period");
+
+    ListenToYearAndPeriodAsOptions(yearPeriod, function (options) {
+        FilterRecords(TARGET, {data: JSON.stringify(options)}).then(r => {
+            UpdateTable(r)
+        })
+    })
+
+
+}
 function Init() {
     ManageSearchEngine();
     ManageTable();
+    ManageButtons();
+    Listens();
 }
 
 document.addEventListener("DOMContentLoaded", Init);

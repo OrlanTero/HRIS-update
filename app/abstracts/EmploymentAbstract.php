@@ -25,4 +25,7 @@ abstract class EmploymentAbstract extends ModelDefaultFunctions
     public $rest_day_2;
 
     public $active;
+
+    public $db_status;
+
 }

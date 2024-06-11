@@ -122,6 +122,12 @@ export class Popup {
                     this.Remove();
                 });
             }
+
+           document.addEventListener("keydown", function(e){
+                if(e.key === "Escape"){
+                    obj.remove();
+                }
+            })
         }
     }
 

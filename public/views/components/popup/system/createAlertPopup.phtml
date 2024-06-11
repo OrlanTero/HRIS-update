@@ -41,12 +41,12 @@ function CreateButton($name, $label, $is_filled = false) {
                     <div class="popup-footer">
                         <div class="form-group-container submit-group">
                             <?php if ($options['alert_type'] === "alert-yes-no"): ?>
-                            <?= CreateButton("no-btn", "No") ?>
-                            <?= CreateButton("yes-btn", "Yes", true) ?>
+                                <?= CreateButton("no-btn", "No") ?>
+                                <?= CreateButton("yes-btn", "Yes", true) ?>
                             <?php elseif ($options['alert_type'] === "alert-yes-only"): ?>
-                            <?= CreateButton("yes-btn", "Yes", true) ?>
+                                <?= CreateButton("yes-btn", "Yes", true) ?>
                             <?php elseif ($options['alert_type'] === "alert-close-only"): ?>
-                            <?= CreateButton("close-btn", "Close", true) ?>
+                                <?= CreateButton("close-btn", "Close", true) ?>
                             <?php endif; ?>
                         </div>
                     </div>

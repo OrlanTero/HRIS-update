@@ -1,21 +1,22 @@
 import {
     addAttr,
-    addHtml, append, CreateElement,
+    addHtml, append, CreateElement, GetComboValue,
     HideShowComponent,
     ListenToForm,
-    MakeID,
+    MakeID, ManageAccordions,
     ManageComboBoxes
 } from "../../../modules/component/Tool.js";
 import Popup from "../../../classes/components/Popup.js";
 import {TableListener} from "../../../classes/components/TableListener.js";
 import {
     AddRecord, EditRecord,
-    RemoveRecords,
+    RemoveRecords, RemoveRecordsBatch,
     SearchRecords,
     UpdateRecords
 } from "../../../modules/app/SystemFunctions.js";
 import {NewNotification, NotificationType} from "../../../classes/components/NotificationPopup.js";
-
+import AlertPopup, {AlertTypes} from "../../../classes/components/AlertPopup.js";
+import FilterContainer from "../../../classes/components/FilterContainer.js";
 const TARGET = "clients";
 
 function UpdateTable(TABLE_HTML) {
@@ -30,26 +31,24 @@ function UpdateData() {
 }
 
 function DeleteRequests(ids) {
-    const popup = new Popup("category/deleteRecord", null, {
-        backgroundDismiss: false,
+    const popup = new AlertPopup({
+        primary: "Remove Clients?",
+        secondary: `${ids.length} selected`,
+        message: "You will remove this client"
+    }, {
+        alert_type: AlertTypes.YES_NO,
     });
 
-    popup.Create().then((pop) => {
-        popup.Show();
-
-        const no = pop.ELEMENT.querySelector(".no-btn");
-        const yes = pop.ELEMENT.querySelector(".yes-btn");
-
-        no.addEventListener("click", () => {
-            popup.Remove();
-        });
-
-        yes.addEventListener("click", () => {
-            RemoveRecords(TARGET, ids.map((id) => {
-                return {id: id}
-            })).then(() => UpdateData().then(() => popup.Remove()))
-        });
+    popup.AddListeners({
+        onYes: () => {
+            RemoveRecordsBatch(TARGET, {data: JSON.stringify(ids)}).then((res) => {
+                console.log(res)
+                UpdateData();
+            })
+        }
     })
+
+    popup.Create().then(() => { popup.Show() })
 }
 
 function ViewRequest(id) {
@@ -61,8 +60,10 @@ function ViewRequest(id) {
         popup.Show();
 
         const form = pop.ELEMENT.querySelector("form.form-control");
-
+        const region = form.querySelector(".region");
         ListenToForm(form, function (data) {
+            data['region'] = GetComboValue(region).text;
+            console.log(data)
             EditRecord(TARGET, {id, data: JSON.stringify(data)}).then((res) => {
                 NewNotification({
                     title: res.code === 200 ? 'Success' : 'Failed',
@@ -73,9 +74,10 @@ function ViewRequest(id) {
 
                 UpdateData();
             })
-        })
+        }, ['region', 'mobile', 'telephone', 'email', 'person', 'w_pagibig', 'address', 'vat', 'swfee_1', 'swfee_2', 'swfee_3', 'agency_1', 'agency_2', 'agency_3', 'regular', 'overtime', 'month', 'regular_1', 'overtime_1', 'month_1', 'regular_2', 'overtime_2', 'nightdiff', 'sea', 'cola', 'leave_1', 'uniform', 'allowance', 'head_guard_allowance', 'ctpa', 'legal_holiday', 'special_holiday', 'restday', 'legal_holiday_ot', 'special_holiday_ot'])
 
-        ManageComboBoxes()
+        ManageComboBoxes();
+        ManageAccordions();
     }))
 }
 
@@ -88,7 +90,7 @@ function AddRequest(id) {
         popup.Show();
 
         const form = pop.ELEMENT.querySelector("form.form-control");
-        
+
         ListenToForm(form, function (data) {
             AddRecord(TARGET, {data: JSON.stringify(data)}).then((res) => {
                 NewNotification({
@@ -162,10 +164,28 @@ function ManageSearchEngine() {
         Search(searchEngine.value)
     })
 }
+function ManageButtons() {
+    const filter = document.querySelector(".filter-button");
 
+    const FLTER = new FilterContainer({}, { table: "clients", id: "client_id", control: "CLIENT_CONTROL"});
+
+    FLTER.Create().then(() => FLTER.Hide());
+
+    FLTER.Load("CLIENT_TABLE_HEADER_TEXT", "CLIENT_TABLE_BODY_KEY")
+
+    FLTER.AddListeners({onFilter: function (data) {
+            UpdateTable(data);
+        }});
+
+    filter.addEventListener("click", function () {
+        FLTER.Show();
+    })
+
+}
 function Init() {
     ManageSearchEngine();
     ManageTable();
+    ManageButtons();
 }
 
 document.addEventListener("DOMContentLoaded", Init);

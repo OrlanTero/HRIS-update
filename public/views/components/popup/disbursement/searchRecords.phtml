@@ -1,0 +1,11 @@
+<?php
+
+global $APPLICATION, $DISBURSEMENT_TABLE_BODY_KEY, $DISBURSEMENT_TABLE_HEADER_TEXT;
+
+$search = $_POST['search'];
+$control = $APPLICATION->FUNCTIONS->DISBURSEMENT_CONTROL;
+$RECORDS = $control->searchRecords($search,false);
+$ID = "disbursement_id";
+$BUTTON = false;
+
+echo CreateTable($DISBURSEMENT_TABLE_HEADER_TEXT, $DISBURSEMENT_TABLE_BODY_KEY, $RECORDS, $ID, $BUTTON);
