@@ -17,6 +17,7 @@ import {
 import {NewNotification, NotificationType} from "../../../classes/components/NotificationPopup.js";
 import AlertPopup, {AlertTypes} from "../../../classes/components/AlertPopup.js";
 import FilterContainer from "../../../classes/components/FilterContainer.js";
+import {SelectHoliday} from "../../../modules/app/Administrator.js";
 const TARGET = "clients";
 
 function UpdateTable(TABLE_HTML) {
@@ -51,6 +52,69 @@ function DeleteRequests(ids) {
     popup.Create().then(() => { popup.Show() })
 }
 
+function ViewClientHolidays(id) {
+    const popup = new Popup("client_manager/view_client_holidays", {id: id}, {
+        backgroundDismiss: false,
+    });
+
+    popup.Create().then((pop) => {
+        const TABLE = popup.ELEMENT.querySelector(".main-table-container.table-component");
+
+        if (!TABLE) return;
+
+        const TABLE_LISTENER = new TableListener(TABLE);
+
+        TABLE_LISTENER.singularSelection = true;
+
+        TABLE_LISTENER.addListeners({
+            none: {
+                remove: ["delete-request", "view-request"],
+                view: ["add-request"],
+            },
+            select: {
+                view: ["delete-request", "view-request"],
+            },
+            selects: {
+                view: ["delete-request"],
+                remove: ["view-request"]
+            },
+        })
+
+        TABLE_LISTENER.init();
+
+        TABLE_LISTENER.listen(() => {
+            TABLE_LISTENER.addButtonListener([
+                {
+                    name: "add-request",
+                    action: () => {
+                        SelectHoliday(id).then((res = []) => {
+                        Promise.all( res.map(r => r.holiday_id).map(holiday => AddRecord("client_holidays", {data: JSON.stringify({
+                                    client_id: id,
+                                    holiday_id: holiday
+                                })}))).then((res)=> {
+                                    console.log(res);
+                        });
+                        })
+                    },
+                    single: true
+                },
+                {
+                    name: "view-request",
+                    action: ViewRequest,
+                    single: true
+                },
+                {
+                    name: "delete-request",
+                    action: DeleteRequests,
+                    single: false
+                },
+            ]);
+        });
+
+        popup.Show();
+    });
+}
+
 function ViewRequest(id) {
     const popup = new Popup("client_manager/view_client", {id: id}, {
         backgroundDismiss: false,
@@ -61,9 +125,12 @@ function ViewRequest(id) {
 
         const form = pop.ELEMENT.querySelector("form.form-control");
         const region = form.querySelector(".region");
+
+        const holidaysBtn = pop.ELEMENT.querySelector(".holidays-btn");
+
         ListenToForm(form, function (data) {
             data['region'] = GetComboValue(region).text;
-            console.log(data)
+
             EditRecord(TARGET, {id, data: JSON.stringify(data)}).then((res) => {
                 NewNotification({
                     title: res.code === 200 ? 'Success' : 'Failed',
@@ -76,6 +143,10 @@ function ViewRequest(id) {
             })
         }, ['region', 'mobile', 'telephone', 'email', 'person', 'w_pagibig', 'address', 'vat', 'swfee_1', 'swfee_2', 'swfee_3', 'agency_1', 'agency_2', 'agency_3', 'regular', 'overtime', 'month', 'regular_1', 'overtime_1', 'month_1', 'regular_2', 'overtime_2', 'nightdiff', 'sea', 'cola', 'leave_1', 'uniform', 'allowance', 'head_guard_allowance', 'ctpa', 'legal_holiday', 'special_holiday', 'restday', 'legal_holiday_ot', 'special_holiday_ot'])
 
+        holidaysBtn.addEventListener("click", function () {
+            ViewClientHolidays(id);
+        })
+        
         ManageComboBoxes();
         ManageAccordions();
     }))

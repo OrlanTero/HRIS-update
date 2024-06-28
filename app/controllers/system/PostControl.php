@@ -49,6 +49,16 @@ class PostControl
         return $control->get($id, true);
     }
 
+    public function GetHoliday() {
+        global $APPLICATION;
+
+        $control = $APPLICATION->FUNCTIONS->HOLIDAY_CONTROL;
+
+        $id = $_POST["id"];
+
+        return $control->get($id, true);
+    }
+
     public function GetEmployment() {
         global $APPLICATION;
 

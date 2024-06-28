@@ -152,6 +152,23 @@ export function GetClient(id) {
     })
 }
 
+export function GetHoliday(id) {
+    return new Promise((resolve) => {
+        Ajax({
+            url: "/api/post/GetHoliday",
+            type: "POST",
+            data: {id},
+            success: (res) => {
+                try {
+                    resolve(JSON.parse(res));
+                } catch (e) {
+                    resolve(null);
+                }
+            }
+        })
+    })
+}
+
 export function GetBank(id) {
     return new Promise((resolve) => {
         Ajax({
@@ -508,6 +525,82 @@ export function SelectClient() {
                         name: "select-request",
                         action: SelectRequest,
                         single: true
+                    },
+                ]);
+            });
+        }
+
+        popup.Create().then((pop) => {
+            popup.Show();
+
+            ManageTable();
+
+            const searchEngine = popup.ELEMENT.querySelector(".search-engine input[name=search-records]");
+
+            searchEngine.addEventListener("input", () => {
+                Search(searchEngine.value)
+            })
+        })
+    })
+}
+
+
+export function SelectHoliday(id) {
+    const popup = new Popup("client_manager/select_holiday", {id}, {
+        backgroundDismiss: false,
+    });
+
+    return new Promise((resolve) => {
+        const SelectRequest = (ids = []) => {
+            Promise.all(ids.map((id) => GetHoliday(id))).then((res)=> {
+                resolve(res);
+            }).finally(() => popup.Remove());
+
+        }
+
+        function Search(toSearch, filter) {
+            SearchRecords("holidays", toSearch, filter).then((HTML) => UpdateTable(HTML));
+        }
+
+        function UpdateTable(TABLE_HTML) {
+            const TABLE_BODY = popup.ELEMENT.querySelector(".main-table-body");
+
+            addHtml(TABLE_BODY, TABLE_HTML);
+
+            ManageTable();
+        }
+
+        function ManageTable() {
+            const TABLE = popup.ELEMENT.querySelector(".main-table-container.items-component");
+
+            if (!TABLE) return;
+
+            const TABLE_LISTENER = new TableListener(TABLE);
+
+            TABLE_LISTENER.singularSelection = false;
+
+            TABLE_LISTENER.addListeners({
+                none: {
+                    view: [],
+                    remove: ["select-request"],
+                },
+                select: {
+                    view: ["select-request"],
+                },
+                selects: {
+                    view: ["select-request"],
+                    remove:  [],
+                },
+            })
+
+            TABLE_LISTENER.init();
+
+            TABLE_LISTENER.listen(() => {
+                TABLE_LISTENER.addButtonListener([
+                    {
+                        name: "select-request",
+                        action: SelectRequest,
+                        single: false
                     },
                 ]);
             });

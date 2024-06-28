@@ -9,6 +9,7 @@ use Application\controllers\system\AttendanceGroupControl;
 use Application\controllers\system\BankControl;
 use Application\controllers\system\BeneficiaryControl;
 use Application\controllers\system\ClientController;
+use Application\controllers\system\ClientholidayControl;
 use Application\controllers\system\DeployedEmployeeControl;
 use Application\controllers\system\DisbursementControl;
 use Application\controllers\system\EmploymentControl;
@@ -59,6 +60,8 @@ class GlobalFunctions
     public $SERVICE_DEDUCTION_CONTROL;
 
     public $HOLIDAY_CONTROL;
+
+    public $CLIENT_HOLIDAY_CONTROL;
 
     public $ATTENDANCE_GROUP_CONTROL;
 
@@ -121,5 +124,6 @@ class GlobalFunctions
         $this->PAYSLIP_CONTROL = new PaySlipControl();
         $this->PETTY_CASH_REPORT_CONTROL = new PettyCashReportControl();
         $this->PAYSLIP_RATES_CONTROL = new PayslipRatesControl();
+        $this->CLIENT_HOLIDAY_CONTROL = new ClientholidayControl();
     }
 }

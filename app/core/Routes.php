@@ -300,6 +300,20 @@ class Routes
                     });
                 });
 
+                $KLEIN->with("/client_holidays", function () use ($KLEIN, $APPLICATION) {
+                    $KLEIN->respond("POST", "/addRecord", function () use ($APPLICATION) {
+                        return json_encode($APPLICATION->FUNCTIONS->CLIENT_HOLIDAY_CONTROL->addRecordWithLog(json_decode($_POST["data"], true)));
+                    });
+
+                    $KLEIN->respond("POST", "/editRecord", function () use ($APPLICATION) {
+                        return json_encode($APPLICATION->FUNCTIONS->CLIENT_HOLIDAY_CONTROL->editRecordWithLog($_POST["id"],json_decode($_POST["data"], true)));
+                    });
+
+                    $KLEIN->respond("POST", "/removeRecords", function () use ($APPLICATION) {
+                        return json_encode($APPLICATION->FUNCTIONS->CLIENT_HOLIDAY_CONTROL->removeRecordsWithLog(json_decode($_POST["data"], true)));
+                    });
+                });
+
                 $KLEIN->with("/employee_deployment", function () use ($KLEIN, $APPLICATION) {
                     $KLEIN->respond("POST", "/addRecord", function () use ($APPLICATION) {
                         return json_encode($APPLICATION->FUNCTIONS->DEPLOYED_EMPLOYEE_CONTROL->addRecordWithLog(json_decode($_POST["data"], true)));
@@ -310,6 +324,7 @@ class Routes
                     });
 
                     $KLEIN->respond("POST", "/editRecord", function () use ($APPLICATION) {
+                        return json_encode($APPLICATION->FUNCTIONS->DEPLOYED_EMPLOYEE_CONTROL->editRecordWithLog($_POST["id"],json_decode($_POST["data"], true)));
                         return json_encode($APPLICATION->FUNCTIONS->DEPLOYED_EMPLOYEE_CONTROL->editRecordWithLog($_POST["id"],json_decode($_POST["data"], true)));
                     });
 
@@ -358,7 +373,7 @@ class Routes
 
                 $KLEIN->with("/attendance_items", function () use ($KLEIN, $APPLICATION) {
                     $KLEIN->respond("POST", "/addRecord", function () use ($APPLICATION) {
-                        return json_encode($APPLICATION->FUNCTIONS->ATTENDANCE_CONTROL->add(json_decode($_POST["data"], true)));
+                        return json_encode($APPLICATION->FUNCTIONS->ATTENDANCE_CONTROL->add($_POST['client_id'], json_decode($_POST["data"], true)));
                     });
 
                     $KLEIN->respond("POST", "/removeRecords", function () use ($APPLICATION) {

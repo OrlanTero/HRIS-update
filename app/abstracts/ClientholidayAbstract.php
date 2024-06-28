@@ -8,9 +8,9 @@ abstract class ClientholidayAbstract extends ModelDefaultFunctions
 
     public $client_id;
 
-    public $date;
+    public $holiday_id;
 
-    public $holiday;
+    public $date_created;
 
     public $db_status;
 

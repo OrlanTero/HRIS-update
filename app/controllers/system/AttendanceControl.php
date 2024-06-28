@@ -15,9 +15,15 @@ class AttendanceControl extends ControlDefaultFunctions
 
     protected $CATEGORY = \ActivityLogCategories::ATTENDANCE;
 
+    public function add($client_id, $data) {
+        global $ACTIVITY_CONTROL, $APPLICATION;
 
-    public function add($data) {
-        global  $ACTIVITY_CONTROL;
+        $control = $APPLICATION->FUNCTIONS->CLIENT_CONTROL;
+        $holidayControl = $APPLICATION->FUNCTIONS->CLIENT_HOLIDAY_CONTROL;
+
+        $client = $control->get($client_id, true);
+        $holidays = $holidayControl->filterRecords(['client_id' => $client_id], true);
+
         try {
             foreach ($data as $attendance) {
                 $status = $attendance['status'];
@@ -36,7 +42,6 @@ class AttendanceControl extends ControlDefaultFunctions
             }
 
             $ACTIVITY_CONTROL->insert($this->CATEGORY, \ActivityLogActionTypes::MODIFY, 200);
-
 
             return new Response(200, "Successfully Saved");
         } catch (\Exception $e) {

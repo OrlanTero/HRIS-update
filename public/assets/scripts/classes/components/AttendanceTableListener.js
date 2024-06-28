@@ -534,13 +534,13 @@ export default class AttendanceTableListener {
         this.values.after = this.getCurrentValues();
     }
 
-    saveToDatabase() {
+    saveToDatabase(client_id) {
         return new Promise((resolve, reject) => {
             const changes = this.getChanges();
 
             if (changes.length) {
-                console.log(changes)
-                AddRecord("attendance_items", {data: JSON.stringify(changes)}).then((res) => {
+
+                AddRecord("attendance_items", {client_id: client_id, data: JSON.stringify(changes)}).then((res) => {
                     if (res.code === 200) {
                         resolve(res.message);
                     } else {

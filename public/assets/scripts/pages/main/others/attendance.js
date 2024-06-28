@@ -88,7 +88,7 @@ function ViewRequest(id) {
                 data['client_id'] = selectedClient.client_id;
 
             } else {
-                delete  data['client_id'];
+                delete data['client_id'];
             }
 
             delete data['branch'];
@@ -100,7 +100,7 @@ function ViewRequest(id) {
                 }, 3000,   res.code == 200 ? NotificationType.SUCCESS : NotificationType.ERROR)
             })
          
-            Promise.all(TABLES.map((t) => t.saveToDatabase()))
+            Promise.all(TABLES.map((t) => t.saveToDatabase(data['client_id'])))
                 .then(() => {
                     NewNotification({
                         title:  'Success',
