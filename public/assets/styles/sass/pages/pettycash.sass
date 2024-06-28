@@ -1,0 +1,32 @@
+
+.data-view-summary-container
+  padding: 20px
+  border-radius: 15px
+  margin: 20px 30px
+  background: #ffffff
+  box-shadow: $component_boxshadow
+  .cards-container
+    margin-left: 50px
+    margin-right: 50px
+    display: flex
+    justify-content: space-between
+    .card-container
+      width: 100%
+      margin: 20px 20px
+      padding: 10px 40px
+      min-height: 60px
+      border-radius: 6px
+      background: #ffffff
+      box-shadow: $component_boxshadow
+      span
+        color: #ffffff !important
+      &:first-child
+        background: tomato
+      &:nth-child(2)
+        background: #758A71
+
+      .title
+        span
+          font-size: 18px
+      .content
+        font-size: 30px

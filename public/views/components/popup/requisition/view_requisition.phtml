@@ -1,0 +1,125 @@
+<?php
+global $APPLICATION;
+global $REQUISITION_EXPENSES_LESS_TABLE_BODY_KEY, $REQUISITION_EXPENSES_LESS_TABLE_HEADER_TEXT;
+
+use Application\models\Requisition;
+
+
+$data = json_decode($_POST['data'], true);
+$id = $data['id'];
+$control = $APPLICATION->FUNCTIONS->REQUISITION_CONTROL;
+$requisitioninfoControl= $APPLICATION->FUNCTIONS->REQUISITION_INFO_CONTROL;
+
+/**
+ * @type Requisition
+ */
+$requisition = $control->get($id, true);
+
+$RECORDS = $requisitioninfoControl->filterRecords(['requisition_id' => $requisition->requisition_id], false);
+$ID = "requisition_info_id";
+$BUTTON = -1;
+
+$FINALIZED = $requisition->status == RequisitionStatusType::FINALIZED->value;
+
+?>
+<div class="main-popup-container">
+    <div class="popup-background"></div>
+    <div class="popup-content">
+        <div class="main-popup-table">
+            <div class="popup-top">
+                <div class="headline">
+                    <h1>View Requisition</h1>
+                </div>
+                <div class="paragraph">
+                    <p>List of Requisition</p>
+                </div>
+
+                <div class="floating-button">
+                    <div class="close-popup popup-button">
+                        <?= UseIcon('close') ?>
+                    </div>
+                </div>
+            </div>
+            <form action="" class="form-control">
+                <div class="popup-bot">
+                    <div class="form-group-container flex">
+                        <div class="form-group tooltip">
+                            <div class="tooltiptext">
+                                <span>Remarks</span>
+                            </div>
+                            <div class="error-container">
+                                <input type="text" name="remarks" placeholder="Remarks" value="<?=$requisition->remarks?>" disabled="<?= $FINALIZED ?>">
+                            </div>
+                        </div>
+                        <div class="form-group tooltip">
+                            <div class="tooltiptext">
+                                <span>Status</span>
+                            </div>
+                            <div class="error-container">
+                                <input type="text" name="status" placeholder="Status" value="<?=$requisition->status?>" disabled>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="data-table-content">
+                        <div class="main-table-container table-component full">
+                            <div class="main-table-header">
+                                <div class="table-header">
+                                    <div class="left">
+                                        <div class="title">
+                                            <h2>Requisition</h2>
+                                        </div>
+                                    </div>
+                                    <div class="center"></div>
+                                    <div class="right"></div>
+                                </div>
+                                <div class="table-buttons">
+                                    <div class="left"></div>
+                                    <div class="right">
+                                        <?php if (!$FINALIZED): ?>
+                                            <div class="icon-button table-button show-component" data-name="delete-request">
+                                                <div class="icon">
+                                                    <?= UseIcon("trash-thin") ?>
+                                                </div>
+                                            </div>
+
+                                            <div class="icon-button table-button show-component" data-name="edit-request">
+                                                <div class="icon">
+                                                    <?= UseIcon("pencil-thin") ?>
+                                                </div>
+                                            </div>
+
+                                            <div class="icon-button table-button show-component" data-name="add-request">
+                                                <div class="icon">
+                                                    <?= UseIcon("plus-thin") ?>
+                                                </div>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="main-table-body main-table-requests">
+                                <?= CreateTable($REQUISITION_EXPENSES_LESS_TABLE_HEADER_TEXT, $REQUISITION_EXPENSES_LESS_TABLE_BODY_KEY, $RECORDS, $ID, $BUTTON) ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="popup-footer">
+                    <?php if(!$FINALIZED): ?>
+                    <div class="form-group-container submit-group">
+                        <div class="form-group">
+                            <div class="link clear-form">
+                                <span>Clear</span>
+                            </div>
+                        </div>
+                        <div class="form-group filled-green">
+                                <input type="submit" value="Save">
+                        </div>
+                    </div>
+                    <?php endif ?>
+
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

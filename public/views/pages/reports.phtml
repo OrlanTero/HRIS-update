@@ -1,0 +1,715 @@
+<?php
+
+global $APPLICATION, $PER_CLIENT_TABLE_HEADER_TEXT, $PER_CLIENT_TABLE_BODY_KEY;
+global $SERVICES_DEDUCTION_TABLE_BODY_KEY, $SERVICES_DEDUCTION_TABLE_HEADER_TEXT;
+
+$RECORDS = [];
+
+$control = $APPLICATION->FUNCTIONS->SYSTEM_TYPES_CONTROL;
+$LOAN_TYPES = $control->filterRecords(['category' => 'loan_type'], false);
+
+$TYPES = ObjectToCombo("type", "type_id", $LOAN_TYPES);
+
+function getFooter()
+{
+    return '
+        <div class="footer-content">
+            <div class="right-side">
+                <div class="icon-button printBtn">
+                    <div class="icon"></div>
+                    <div class="text">
+                        <span>PRINT</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    ';
+}
+?>
+
+<?php include "public/views/pages/structures/html_headings.phtml" ?>
+
+<title>Settings</title>
+
+<?php include "public/views/pages/structures/html_heading_closing.phtml" ?>
+
+<?php include "public/views/pages/structures/html_body_open.phtml" ?>
+
+<?php include "public/views/pages/structures/html_opening_parent.phtml" ?>
+
+<div class="left-content">
+
+    <?php include "public/views/pages/structures/html_navbar.phtml" ?>
+
+</div>
+
+<div class="right-content">
+
+    <?php include "public/views/pages/structures/html_right_heading.phtml" ?>
+
+    <div class="right-body">
+            <div class="main-body-content-parent">
+            <div class="main-body-header">
+
+            </div>
+            <div class="main-body-body">
+                <div class="menu-tab-control-parent menu-bar-reports">
+                    <?= CreateMenuBarHeader("reports-container",["PAYROLL", "EXPENSES", "ADMINISTRATOR"]) ?>
+
+                    <div class="menu-content-not-official">
+
+                        <div class="menu-body-item system_type_table" data-category="payroll">
+                            <div class="left-right-content-main side-bar-picker payroll-sidebar" data-id="payroll-picker">
+                                <div class="left-content-main">
+                                    <div class="item-nav side-bar-button" data-id="contributions" data-picker="payroll-picker">
+                                        <div class="icon"></div>
+                                        <div class="text">
+                                            <span>
+                                                CONTRIBUTIONS
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="item-nav side-bar-button" data-id="pay_slip_per_client" data-picker="payroll-picker">
+                                        <div class="icon"></div>
+                                        <div class="text">
+                                            <span>
+                                                PAY SLIP (PER CLIENT)
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="item-nav side-bar-button" data-id="accounts_credited" data-picker="payroll-picker">
+                                        <div class="icon"></div>
+                                        <div class="text">
+                                            <span>
+                                                ACCOUNTS CREDITED
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="item-nav side-bar-button" data-id="loan_payments" data-picker="payroll-picker">
+                                        <div class="icon"></div>
+                                        <div class="text">
+                                            <span>
+                                                LOAN PAYMENTS
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="item-nav side-bar-button" data-id="mortuary_control" data-picker="payroll-picker">
+                                        <div class="icon"></div>
+                                        <div class="text">
+                                            <span>
+                                                MORTUARY CONTROL
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="item-nav side-bar-button" data-id="pay_slip_a_z" data-picker="payroll-picker">
+                                        <div class="icon"></div>
+                                        <div class="text">
+                                            <span>
+                                                PAY SLIP ( A - Z )
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="item-nav side-bar-button" data-id="total_bank" data-picker="payroll-picker">
+                                        <div class="icon"></div>
+                                        <div class="text">
+                                            <span>
+                                                TOTAL BANK SUMMARY
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="item-nav side-bar-button" data-id="payroll" data-picker="payroll-picker">
+                                        <div class="icon"></div>
+                                        <div class="text">
+                                            <span>
+                                                PAYROLL
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="right-content-main">
+
+                                    <div class="side-bar-content" data-content="contributions" data-picker="payroll-picker">
+
+                                    </div>
+                                    <div class="side-bar-content" data-content="pay_slip_per_client" data-picker="payroll-picker">
+                                        <div class="main-con">
+                                            <form action="" class="form-control">
+                                                <div class="head">
+                                                    <div class="left">
+                                                        <div class="input-flex pay_slip_per_client_year_period">
+                                                            <div class="form-group tooltip">
+                                                                <div class="tooltiptext">
+                                                                    <span>Year</span>
+                                                                </div>
+                                                                <div class="error-container">
+                                                                    <?= CreateComboBox("year", "Year", GetYearsFrom(1990)) ?>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group tooltip">
+                                                                <div class="tooltiptext">
+                                                                    <span>Period</span>
+                                                                </div>
+                                                                <div class="error-container">
+                                                                    <?= CreateComboBox("period", "Period", []) ?>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="right">
+                                                        <h2>PAYSLIP</h2>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                            <div class="body payslip_table">
+                                                <div class="data-table-content">
+                                                    <div class="main-table-container table-component per-client-container">
+                                                        <div class="main-table-header">
+                                                            <div class="table-buttons">
+                                                                <div class="left"></div>
+                                                                <div class="right">
+                                                                    <div class="icon-button table-button show-component" data-name="view-request">
+                                                                        <div class="icon">
+                                                                            <?= UseIcon("eye-thin") ?>
+                                                                        </div>
+                                                                        <div class="text">
+                                                                            <span>Print</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="main-table-body main-table-requests">
+                                                            <?= CreateTable($PER_CLIENT_TABLE_HEADER_TEXT, $PER_CLIENT_TABLE_BODY_KEY, $RECORDS, "id", false, true) ?>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="side-bar-content" data-content="accounts_credited"  data-picker="payroll-picker">
+                                        <div class="main-con">
+                                            <form action="" class="form-control">
+                                                <div class="head">
+                                                    <div class="left">
+
+                                                    </div>
+                                                    <div class="right">
+                                                        <h2>ACCOUNTS CREDITED</h2>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                            <div class="body">
+                                                <div class="body-content-form">
+                                                    <div class="content accounts_credited_year_payroll">
+                                                        <div class="form-group tooltip">
+                                                            <div class="tooltiptext">
+                                                                <span>Year</span>
+                                                            </div>
+                                                            <div class="error-container">
+                                                                <?= CreateComboBox("year", "Year", GetYearsFrom(1990)) ?>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group tooltip">
+                                                            <div class="tooltiptext">
+                                                                <span>Period</span>
+                                                            </div>
+                                                            <div class="error-container">
+                                                                <?= CreateComboBox("period", "Period", []) ?>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group tooltip">
+                                                            <div class="tooltiptext">
+                                                                <span>Bank</span>
+                                                            </div>
+                                                            <div class="error-container">
+                                                                <?= CreateComboBox("bank", "Bank", []) ?>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+                                                <?= getFooter(); ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="side-bar-content" data-content="loan_payments"  data-picker="payroll-picker">
+                                        <div class="main-con">
+                                            <form action="" class="form-control">
+                                                <div class="head">
+                                                    <div class="left">
+
+                                                    </div>
+                                                    <div class="right">
+                                                        <h2>LOAN PAYMENTS</h2>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                            <div class="body">
+                                                <div class="body-content-form">
+                                                    <div class="content loan_payments_year_payroll">
+                                                        <div class="form-group tooltip">
+                                                            <div class="tooltiptext">
+                                                                <span>Year</span>
+                                                            </div>
+                                                            <div class="error-container">
+                                                                <?= CreateComboBox("year", "Year", GetYearsFrom(1990)) ?>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group tooltip">
+                                                            <div class="tooltiptext">
+                                                                <span>Period</span>
+                                                            </div>
+                                                            <div class="error-container">
+                                                                <?= CreateComboBox("period", "Period", []) ?>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group tooltip">
+                                                            <div class="tooltiptext">
+                                                                <span>Type</span>
+                                                            </div>
+                                                            <div class="error-container">
+                                                                <?= CreateComboBox("type", "Type", $TYPES) ?>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <?= getFooter(); ?>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="side-bar-content" data-content="mortuary_control"  data-picker="payroll-picker">
+                                        <div class="main-con">
+                                            <form action="" class="form-control">
+                                                <div class="head">
+                                                    <div class="left">
+
+                                                    </div>
+                                                    <div class="right">
+                                                        <h2>MORTUARY CONTRI...</h2>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                            <div class="body">
+                                                <div class="body-content-form">
+                                                    <div class="content mortuary_control_year_payroll">
+                                                        <div class="form-group tooltip">
+                                                            <div class="tooltiptext">
+                                                                <span>Year</span>
+                                                            </div>
+                                                            <div class="error-container">
+                                                                <?= CreateComboBox("year", "Year", GetYearsFrom(1990)) ?>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group tooltip">
+                                                            <div class="tooltiptext">
+                                                                <span>Period</span>
+                                                            </div>
+                                                            <div class="error-container">
+                                                                <?= CreateComboBox("period", "Period", []) ?>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <?= getFooter(); ?>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="side-bar-content" data-content="pay_slip_a_z"  data-picker="payroll-picker">
+                                        <div class="main-con">
+                                            <form action="" class="form-control">
+                                                <div class="head">
+                                                    <div class="left">
+
+                                                    </div>
+                                                    <div class="right">
+                                                        <h2>PAYSLIP ( A - Z )</h2>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                            <div class="body">
+                                                <div class="body-content-form">
+                                                    <div class="content pay_slip_a_z_year_payroll">
+                                                        <div class="form-group tooltip">
+                                                            <div class="tooltiptext">
+                                                                <span>Year</span>
+                                                            </div>
+                                                            <div class="error-container">
+                                                                <?= CreateComboBox("year", "Year", GetYearsFrom(1990)) ?>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group tooltip">
+                                                            <div class="tooltiptext">
+                                                                <span>Period</span>
+                                                            </div>
+                                                            <div class="error-container">
+                                                                <?= CreateComboBox("period", "Period", []) ?>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group tooltip">
+                                                            <div class="tooltiptext">
+                                                                <span>By</span>
+                                                            </div>
+                                                            <div class="error-container">
+                                                                <?= CreateComboBox("by", "By", ["All", "Employee"]) ?>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group tooltip by_select hide-component">
+                                                            <div class="tooltiptext">
+                                                                <span>Employee</span>
+                                                            </div>
+                                                            <div class="error-container">
+                                                                <div class="custom-select-box select-employee">
+                                                                    <div class="main-content">
+                                                                        <input type="text" name="by_employee" placeholder="Select Employee" readonly>
+                                                                        <div class="icon">
+                                                                            <svg width="256px" height="256px" viewBox="0 0 256 256" id="Flat" xmlns="http://www.w3.org/2000/svg">
+                                                                                <path d="M138.82861,130.82861l-80,80a4.00026,4.00026,0,0,1-5.65722-5.65722L130.34326,128,53.17139,50.82861a4.00026,4.00026,0,0,1,5.65722-5.65722l80,80A4.0006,4.0006,0,0,1,138.82861,130.82861Zm80-5.65722-80-80a4.00026,4.00026,0,0,0-5.65722,5.65722L210.34326,128l-77.17187,77.17139a4.00026,4.00026,0,0,0,5.65722,5.65722l80-80A4.0006,4.0006,0,0,0,218.82861,125.17139Z"/>
+                                                                            </svg>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <?= getFooter(); ?>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="side-bar-content" data-content="total_bank" data-picker="payroll-picker">
+                                        <div class="main-con">
+                                            <form action="" class="form-control">
+                                                <div class="head">
+                                                    <div class="left">
+
+                                                    </div>
+                                                    <div class="right">
+                                                        <h2>TOTAL BANK SUMMARY</h2>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                            <div class="body">
+                                                <div class="body-content-form">
+                                                    <div class="content total_bank_year_period">
+                                                        <div class="form-group tooltip">
+                                                            <div class="tooltiptext">
+                                                                <span>Year</span>
+                                                            </div>
+                                                            <div class="error-container">
+                                                                <?= CreateComboBox("year", "Year", GetYearsFrom(1990)) ?>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group tooltip">
+                                                            <div class="tooltiptext">
+                                                                <span>Period</span>
+                                                            </div>
+                                                            <div class="error-container">
+                                                                <?= CreateComboBox("period", "Period", []) ?>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group tooltip">
+                                                            <div class="tooltiptext">
+                                                                <span>By</span>
+                                                            </div>
+                                                            <div class="error-container">
+                                                                <?= CreateComboBox("by", "By", ["All", "Employee"]) ?>
+                                                            </div>
+                                                        </div>
+                                                            <div class="form-group tooltip by_select_bank hide-component">
+                                                                <div class="tooltiptext">
+                                                                    <span>Employee</span>
+                                                                </div>
+                                                                <div class="error-container">
+                                                                    <div class="custom-select-box select-employee">
+                                                                        <div class="main-content">
+                                                                            <input type="text" name="by_bank" placeholder="Select Employee" readonly>
+                                                                            <div class="icon">
+                                                                                <svg width="256px" height="256px" viewBox="0 0 256 256" id="Flat" xmlns="http://www.w3.org/2000/svg">
+                                                                                    <path d="M138.82861,130.82861l-80,80a4.00026,4.00026,0,0,1-5.65722-5.65722L130.34326,128,53.17139,50.82861a4.00026,4.00026,0,0,1,5.65722-5.65722l80,80A4.0006,4.0006,0,0,1,138.82861,130.82861Zm80-5.65722-80-80a4.00026,4.00026,0,0,0-5.65722,5.65722L210.34326,128l-77.17187,77.17139a4.00026,4.00026,0,0,0,5.65722,5.65722l80-80A4.0006,4.0006,0,0,0,218.82861,125.17139Z"/>
+                                                                                </svg>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <?= getFooter(); ?>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="side-bar-content" data-content="payroll" data-picker="payroll-picker">
+                                        <div class="main-con">
+                                            <form action="" class="form-control">
+                                                <div class="head">
+                                                    <div class="left">
+
+                                                    </div>
+                                                    <div class="right">
+                                                        <h2>PAYROLL</h2>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                            <div class="body">
+                                                <div class="body-content-form">
+                                                    <div class="content payroll_year_period">
+                                                        <div class="form-group tooltip">
+                                                            <div class="tooltiptext">
+                                                                <span>Year</span>
+                                                            </div>
+                                                            <div class="error-container">
+                                                                <?= CreateComboBox("year", "Year", GetYearsFrom(1990)) ?>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group tooltip">
+                                                            <div class="tooltiptext">
+                                                                <span>Period</span>
+                                                            </div>
+                                                            <div class="error-container">
+                                                                <?= CreateComboBox("period", "Period", []) ?>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <?= getFooter(); ?>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="menu-body-item" data-category="expenses">
+                            <div class="left-right-content-main side-bar-picker expenses-sidebar"  data-id="expenses-picker">
+                                <div class="left-content-main">
+                                    <div class="item-nav side-bar-button" data-id="summary" data-picker="expenses-picker">
+                                        <div class="icon"></div>
+                                        <div class="text">
+                                            <span>
+                                                SUMMARY OF EXPENSES
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="item-nav side-bar-button" data-id="pettycash" data-picker="expenses-picker">
+                                        <div class="icon"></div>
+                                        <div class="text">
+                                            <span>
+                                                PETTY CASH
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="right-content-main">
+                                    <div class="side-bar-content" data-content="summary" data-picker="expenses-picker">
+                                        <div class="main-con">
+                                            <form action="" class="form-control">
+                                                <div class="head">
+                                                    <div class="left">
+
+                                                    </div>
+                                                    <div class="right">
+                                                        <h2>SUMMARY</h2>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                            <div class="body">
+                                                <div class="body-content-form">
+                                                    <div class="content">
+                                                        <div class="form-group tooltip">
+                                                            <div class="tooltiptext">
+                                                                <span>Year</span>
+                                                            </div>
+                                                            <div class="error-container">
+                                                                <?= CreateComboBox("year", "Year", GetYearsFrom(1990)) ?>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group tooltip">
+                                                            <div class="tooltiptext">
+                                                                <span>Period</span>
+                                                            </div>
+                                                            <div class="error-container">
+                                                                <?= CreateComboBox("period", "Period", []) ?>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <?= getFooter(); ?>
+
+                                        </div>
+                                    </div>
+                                    <div class="side-bar-content" data-content="pettycash" data-picker="expenses-picker">
+                                        <div class="main-con">
+                                            <form action="" class="form-control">
+                                                <div class="head">
+                                                    <div class="left">
+
+                                                    </div>
+                                                    <div class="right">
+                                                        <h2>PETTY CASH</h2>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                            <div class="body">
+                                                <div class="body-content-form">
+                                                    <div class="content petty_cash_expenses_period">
+                                                        <div class="form-group tooltip">
+                                                            <div class="tooltiptext">
+                                                                <span>Year</span>
+                                                            </div>
+                                                            <div class="error-container">
+                                                                <?= CreateComboBox("year", "Year", GetYearsFrom(1990)) ?>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group tooltip">
+                                                            <div class="tooltiptext">
+                                                                <span>Period</span>
+                                                            </div>
+                                                            <div class="error-container">
+                                                                <?= CreateComboBox("period", "Period", []) ?>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <?= getFooter(); ?>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="menu-body-item service_deduction_table" data-category="administrator">
+                            <div class="left-right-content-main side-bar-picker admin-sidebar"  data-id="admin-picker">
+                                <div class="left-content-main">
+                                    <div class="item-nav side-bar-button" data-id="per_client"   data-picker="admin-picker">
+                                        <div class="icon"></div>
+                                        <div class="text">
+                                            <span>
+                                               PER CLIENT
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="item-nav side-bar-button" data-id="summary" data-picker="admin-picker">
+                                        <div class="icon"></div>
+                                        <div class="text">
+                                            <span>
+                                                SUMMARY OF INCOME
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="right-content-main">
+
+                                    <div class="side-bar-content" data-content="per_client" data-picker="admin-picker">
+                                        <div class="main-con">
+                                            <form action="" class="form-control">
+                                                <div class="head">
+                                                    <div class="left">
+
+                                                    </div>
+                                                    <div class="right">
+                                                        <h2>PER CLIENT</h2>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                            <div class="body">
+                                                <div class="body-content-form">
+                                                    <div class="content">
+                                                        <div class="form-group tooltip">
+                                                            <div class="tooltiptext">
+                                                                <span>Year</span>
+                                                            </div>
+                                                            <div class="error-container">
+                                                                <?= CreateComboBox("year", "Year", GetYearsFrom(1990)) ?>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group tooltip">
+                                                            <div class="tooltiptext">
+                                                                <span>Period</span>
+                                                            </div>
+                                                            <div class="error-container">
+                                                                <?= CreateComboBox("period", "Period", GetYearsFrom(1990)) ?>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <?= getFooter(); ?>
+
+                                        </div>
+                                    </div>
+                                    <div class="side-bar-content" data-content="summary" data-picker="admin-picker">
+                                        <div class="main-con">
+                                            <form action="" class="form-control">
+                                                <div class="head">
+                                                    <div class="left">
+
+                                                    </div>
+                                                    <div class="right">
+                                                        <h2>SUMMARY INCOME</h2>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                            <div class="body">
+                                                <div class="body-content-form">
+                                                    <div class="content">
+                                                        <div class="form-group tooltip">
+                                                            <div class="tooltiptext">
+                                                                <span>Year</span>
+                                                            </div>
+                                                            <div class="error-container">
+                                                                <?= CreateComboBox("year", "Year", GetYearsFrom(1990)) ?>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group tooltip">
+                                                            <div class="tooltiptext">
+                                                                <span>Period</span>
+                                                            </div>
+                                                            <div class="error-container">
+                                                                <?= CreateComboBox("period", "Period", []) ?>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <?= getFooter(); ?>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <?php include "public/views/pages/structures/html_pipes.phtml" ?>
+
+    <script type="module" src="/public/assets/scripts/pages/main/administrator/reports.js"></script>
+
+    <?php include "public/views/pages/structures/html_closing_parent.phtml" ?>
+
+    <?php include "public/views/pages/structures/html_body_closing.phtml" ?>

@@ -55,6 +55,8 @@ class AttendanceGroupControl extends ControlDefaultFunctions
                 $this->unsetOtherAsUnActive($id);
             }
         }
+
+        return $edit;
     }
 
     private function unsetOtherAsUnActive($id)

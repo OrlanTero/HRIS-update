@@ -1,0 +1,12 @@
+<?php
+
+global $APPLICATION, $ATTENDANCE_GROUP_BODY_KEY, $ATTENDANCE_GROUP_TABLE_HEADER_TEXT;
+
+$data = json_decode($_POST['data'], true);
+$control = $APPLICATION->FUNCTIONS->ATTENDANCE_GROUP_CONTROL;
+$RECORDS = $control->filterRecords($data, false);
+$ID = "attendance_group_id";
+$BUTTON = false;
+
+
+echo CreateTable($ATTENDANCE_GROUP_TABLE_HEADER_TEXT, $ATTENDANCE_GROUP_BODY_KEY, $RECORDS, $ID, $BUTTON);

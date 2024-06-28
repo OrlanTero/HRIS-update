@@ -1,0 +1,35 @@
+<?php
+
+global $APPLICATION, $NETPAYS_TABLE_HEADER_TEXT, $NETPAYS_TABLE_BODY_KEY;
+
+use Application\models\PayrollAnalyzer;
+
+$control = $APPLICATION->FUNCTIONS->ATTENDANCE_GROUP_CONTROL;
+
+$id = $_POST['employee_id'];
+$options = json_decode($_POST['options'], true);
+
+$RECORDS = $control->getAllPeriodsWhereEmployeeEmployed($id, $options);
+
+
+$RECORDS = array_map(function ($RECORD) use ($id) {
+    $analyzer = new PayrollAnalyzer($RECORD->attendance_group_id);
+
+    $analyzer->init();
+
+    return $analyzer->computeAttendanceOf($id);
+}, $RECORDS);
+
+$RECORDS = array_map(function ($result) {
+    return [
+        "id" => $result->payslip_id,
+        "client" => $result->group->client->name,
+        "branch" => $result->group->client->branch,
+        "amount" => $result->netpay,
+    ];
+}, $RECORDS);
+
+echo CreateTable($NETPAYS_TABLE_HEADER_TEXT, $NETPAYS_TABLE_BODY_KEY, $RECORDS, "id", false, true);
+//
+
+

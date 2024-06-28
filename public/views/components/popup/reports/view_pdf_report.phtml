@@ -1,0 +1,243 @@
+<?php
+global $APPLICATION;
+global $REPORTS_MORTUARY_BODY, $REPORTS_MORTUARY_HEADER, $REPORTS_PETTY_BODY, $REPORTS_PETTY_HEADER;
+use Application\models\Client;
+use Application\models\PayslipRates;
+use Application\models\ServiceDeduction;
+
+$mainData = json_decode($_POST['data'], true);
+
+$type = $mainData['type'];
+$data = $mainData['data'];
+
+function TableRow($title, $hours,  $rate)
+{
+    if ($hours == 0) {
+        return "";
+    }
+
+    return '
+        <tr>
+            <td>'.$title.'</td>
+            <td>'. number_format($hours) .'</td>
+            <td>'. number_format($rate) .'</td>
+            <td>'. number_format(( $hours * $rate )) .'</td>
+        </tr>
+    ';
+}
+
+function TableRightRow($title, $value)
+{
+    if ($value == 0) {
+        return "";
+    }
+
+    return '
+        <tr>
+            <td>'.$title.'</td>
+            <td>'. $value .'</td>
+        </tr>
+    ';
+}
+function CreatePaySlip($data)
+{
+    global $APPLICATION;
+
+    /**
+     * @type Client $client
+     * @type PayslipRates $rates
+     */
+    $employee = $APPLICATION->FUNCTIONS->EMPLOYEE_CONTROL->get($data['employee_id'], true);
+    $client = $APPLICATION->FUNCTIONS->CLIENT_CONTROL->get($data['client_id'], true);
+    $rates = $APPLICATION->FUNCTIONS->PAYSLIP_RATES_CONTROL->get($data['payslip_rates_id'], true);
+    $beneficiary = $employee->getBeneficiary($data['period'], $data['year']);
+
+    $HOUR_REGULAR = $data['regular_hours'];
+    $HOUR_REGULAR_OT = $data['ot_hours'];
+    $HOUR_NIGHT_DIFF = $data['night_diff_hours'];
+    $HOUR_SPECIAL = $data['special_holiday_hours'];
+    $HOUR_SPECIAL_OT = $data['special_holiday_ot_hours'];
+    $HOUR_LEGAL = $data['legal_holiday_hours'];
+    $HOUR_LEGAL_OT = $data['legal_holiday_ot_hours'];
+
+    $RATE_REGULAR = $rates->regular;
+    $RATE_REGULAR_OT = $rates->ot;
+    $RATE_NIGHT_DIFF = $rates->night_diff;
+    $RATE_SPECIAL = $rates->special_holiday;
+    $RATE_SPECIAL_OT = $rates->special_holiday_ot;
+    $RATE_LEGAL = $rates->legal_holiday;
+    $RATE_LEGAL_OT = $rates->legal_holiday_ot;
+
+    $RATE_UNIFORM = $rates->uniform;
+    $RATE_SEA = $rates->sea;
+    $RATE_COLA = $rates->cola;
+    $RATE_ALLOWANCE = $rates->allowance;
+    $RATE_HEAD_GUARD_ALLOWANCE = $rates->head_guard_allowance;
+    $RATE_CTPA = $rates->ctpa;
+    $RATE_LEAVE = $rates->leave_rate;
+
+    return '
+        <div class="pay-slip-container">
+            <div class="top">
+                <div class="one">
+                    <span>Period: '. $data["period"] .', '. $data["year"] .'</span>
+                    <span>PAYSLIP</span>
+                </div>
+                <div class="two">
+                    <h2>'. $employee->name .'</h2>
+                    <p style="font-weight:800;">₱ '. number_format($data["netpay"]) .'</p>
+                </div>
+                '.
+                (empty($beneficiary) ? "" : '
+                    <div class="three">
+                        <span>Beneficiary: ( ' . $beneficiary['name'] .  ' )</span>
+                    </div>
+                ')
+                .'
+            </div>
+            <div class="body">
+                <div class="left">
+                    <div class="body-grid">
+                        <table>
+                            <tr>
+                                <th></th>
+                                <th>HOURS</th>
+                                <th>RATES</th>
+                                <th>AMOUNT</th>
+                            </tr>
+                            '. TableRow( "Regular", $HOUR_REGULAR, $RATE_REGULAR) .'
+                            '. TableRow( "Regular OT", $HOUR_REGULAR_OT, $RATE_REGULAR_OT) .'
+                            '. TableRow( "Night Diff", $HOUR_NIGHT_DIFF, $RATE_NIGHT_DIFF) .'
+                            '. TableRow( "Legal Holiday", $HOUR_LEGAL, $RATE_LEGAL) .'
+                            '. TableRow( "Legal Holiday OT", $HOUR_LEGAL_OT, $RATE_LEGAL_OT) .'
+                            '. TableRow( "Special Holiday", $HOUR_SPECIAL, $RATE_SPECIAL) .'
+                            '. TableRow( "Special Holiday OT", $HOUR_SPECIAL_OT, $RATE_SPECIAL_OT) .'
+                        </table>
+                        <div class="head">
+                            <p>GROSS</p>
+                            <p>₱ '. number_format($data['gross_pay']) .'</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="right">
+                    <div class="body-grid">
+                        <table>
+                            <tr>
+                                <th>LESS:</th>
+                                <th></th>
+                            </tr>
+                            '. TableRightRow( "SSS CONTRI.", $data['sss']) .'
+                            '. TableRightRow( "PHILHEALTH", $data['phil'] ) .'
+                            '. TableRightRow( "INSURANCE", $data['insurance']) .'
+                            '. TableRightRow( "MEAL", 0) .'
+                            '. TableRightRow( "UNIFORM", $RATE_UNIFORM) .'
+                            '. TableRightRow( "SEA", $RATE_SEA ) .'
+                            '. TableRightRow( "COLA", $RATE_COLA) .'
+                            '. TableRightRow( "ALLOWANCE", $RATE_ALLOWANCE) .'
+                            '. TableRightRow( "HEAD GUARD ALLOWANCE", $RATE_HEAD_GUARD_ALLOWANCE ) .'
+                            '. TableRightRow( "CTPA", $RATE_CTPA) .'
+                            '. TableRightRow( "DEATH CONTRI.", $data['death']) .'
+                        </table>
+                        <div class="head">
+                            <p>DEDUCTIONS</p>
+                            <p>₱ '. number_format(($data['part1'] + $data['part2'])) .'</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    ';
+}
+
+
+function CreatePaySlips($data = [])
+{
+    $chunk = array_chunk($data, 3, true);
+
+    $output = '<div class="pay-slip-pages">';
+        foreach ($chunk as $c) {
+            $output .= '<div class="pay-slip-page">';
+            foreach ($c as $v) {
+                $output .= CreatePaySlip($v);
+            }
+            $output .= '</div>';
+        }
+
+    $output .= '</div>';
+
+    return $output;
+}
+?>
+<div class="main-popup-container">
+    <div class="popup-background"></div>
+    <div class="popup-content">
+        <div class="main-popup-table">
+            <div class="popup-top">
+                <div class="headline">
+                    <h1>Preview Print</h1>
+                </div>
+                <div class="paragraph">
+                    <p>Print report</p>
+                </div>
+
+                <div class="floating-button">
+                    <div class="close-popup popup-button">
+                        <?= UseIcon('close') ?>
+                    </div>
+                </div>
+            </div>
+            <form action="" class="form-control">
+                <div class="popup-bot">
+                    <div class="print-preview-container">
+                        <div class="print-preview-header">
+                            <h2>CDM SECURITY AGENCY, INC.</h2>
+                            <p>Salusoy, Meycauayan City, Bulacan, (044) 840-8145</p>
+
+                            <div class="title-container">
+                                <?php if($type == ReportTypes::PAYSLIP_PER_CLIENT_INDIVIDUALLY->value): ?>
+                                    <h3 class="title">PAYSLIP PER CLIENT</h3>
+                                <?php elseif ($type == ReportTypes::LOAN_PAYMENTS->value): ?>
+                                    <h3 class="title">LOAN PAYMENTS</h3>
+                                <?php elseif ($type == ReportTypes::MORTUARY->value): ?>
+                                    <h3 class="title">MORTUARY CONTRI.</h3>
+                                <?php elseif ($type == ReportTypes::PAYSLIP_AZ->value): ?>
+                                    <h3 class="title">PAYSLIP</h3>
+                                <?php elseif ($type == ReportTypes::PETTY_CASH_EXPENSES->value): ?>
+                                    <h3 class="title">PETTY CASH EXPENSES</h3>
+                                <?php endif ?>
+                            </div>
+                        </div>
+                       <?php if($type == ReportTypes::PAYSLIP_PER_CLIENT_INDIVIDUALLY->value): ?>
+                            <?= CreatePaySlips($data) ?>
+                       <?php elseif ($type == ReportTypes::LOAN_PAYMENTS->value): ?>
+
+                       <?= CreateTable($REPORTS_MORTUARY_HEADER, $REPORTS_MORTUARY_BODY, $data, "id", false, true) ?>
+
+                       <?php elseif ($type == ReportTypes::MORTUARY->value): ?>
+
+                       <?= CreateTable($REPORTS_MORTUARY_HEADER, $REPORTS_MORTUARY_BODY, $data, "id", false, true) ?>
+
+                       <?php elseif ($type == ReportTypes::PAYSLIP_AZ->value): ?>
+
+                           <?= CreatePaySlips($data) ?>
+
+                       <?php elseif ($type == ReportTypes::PETTY_CASH_EXPENSES->value): ?>
+                           <?= CreateTable($REPORTS_PETTY_HEADER, $REPORTS_PETTY_BODY, $data, "id", false, true) ?>
+                        <?php endif ?>
+                    </div>
+                </div>
+                <div class="popup-footer">
+
+                </div>
+
+                <div class="popup-footer">
+                    <div class="form-group-container submit-group right-side">
+                        <div class="form-group filled-green">
+                            <input type="submit" value="Print">
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,349 @@
+<?php
+
+global $APPLICATION, $NO_TYPE_TABLE_HEADER_TEXT, $NO_TYPE_TABLE_BODY_KEY;
+global $SERVICES_DEDUCTION_TABLE_BODY_KEY, $SERVICES_DEDUCTION_TABLE_HEADER_TEXT;
+
+use Application\controllers\system\UserAuthenticationControl;
+use Application\controllers\system\UserProfileControl;
+
+$control = new UserAuthenticationControl();
+$profileControl = new UserProfileControl();
+
+$record = $control->getCurrentUserAuthentication();
+$profile = $profileControl->getProfile();
+?>
+
+<?php include "public/views/pages/structures/html_headings.phtml" ?>
+
+<title>Settings</title>
+
+<?php include "public/views/pages/structures/html_heading_closing.phtml" ?>
+
+<?php include "public/views/pages/structures/html_body_open.phtml" ?>
+
+<?php include "public/views/pages/structures/html_opening_parent.phtml" ?>
+
+<div class="left-content">
+
+    <?php include "public/views/pages/structures/html_navbar.phtml" ?>
+
+</div>
+
+<div class="right-content">
+
+    <?php include "public/views/pages/structures/html_right_heading.phtml" ?>
+
+    <div class="right-body">
+        <div class="main-body-content-parent">
+<!--            <div class="main-body-header">-->
+<!--                <div class="header-nav">-->
+<!--                    <div class="left">-->
+<!--                        <div class="title">-->
+<!--                            <h2>Manage Settings</h2>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="right"></div>-->
+<!--                </div>-->
+<!--            </div>-->
+            <div class="main-body-body">
+                <div class="profile-main-container">
+                    <div class="profile-head">
+                        <div class="profile-cover">
+                        </div>
+                        <div class="profile-parent">
+                            <div class="profile-picture">
+                                <?= UseImage('img/default.jpg', true) ?>
+                            </div>
+                            <div class="text">
+                                <h1>HRIS MANAGEMENT</h1>
+                                <p>Administrator</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="profile-body side-bar-picker profile-sidebar" data-id="profile-picker">
+                        <div class="drawer-container">
+                            <div class="drawer-items">
+                                <div class="drawer-item side-bar-button active" data-id="profile" data-picker="profile-picker">
+                                    <div class="text">
+                                        <span>Company Profile</span>
+                                    </div>
+                                </div>
+
+                                <div class="drawer-item side-bar-button" data-id="authentication" data-picker="profile-picker">
+                                    <div class="text">
+                                        <span>Authentication</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="most-of-the-content">
+                            <div class="side-bar-content" data-content="profile" data-picker="profile-picker">
+                                <div class="main-content">
+                                    <div class="head">
+                                        <h2>Profile</h2>
+
+                                        <div class="icon-button edit-profile-btn">
+                                            <div class="icon">
+                                                <?= UseIcon('pencil-thin') ?>
+                                            </div>
+                                            <div class="text">
+                                                <span>Edit Profile</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="body">
+                                        <div class="body-left-right">
+                                            <div class="body-left">
+                                                <form action="" class="form-control">
+                                                    <div class="form-group-container">
+                                                        <div class="form-group tooltip">
+                                                            <div class="tooltiptext">
+                                                                <span>Branch</span>
+                                                            </div>
+                                                            <label for=""><span>Name</span></label>
+                                                            <div class="error-container">
+                                                                <input type="text" name="name" placeholder="Name" disabled value="<?= $profile->name ?>">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group-container">
+                                                        <div class="form-group tooltip">
+                                                            <div class="tooltiptext">
+                                                                <span>Description</span>
+                                                            </div>
+                                                            <label for=""><span>Description</span></label>
+                                                            <div class="error-container">
+                                                                <textarea name="description" id="" cols="30"
+                                                                          rows="10" placeholder="Description" disabled><?= $profile->description ?></textarea>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group-container">
+                                                        <div class="form-group tooltip">
+                                                            <div class="tooltiptext">
+                                                                <span>Owner</span>
+                                                            </div>
+                                                            <label for=""><span>Owner</span></label>
+                                                            <div class="error-container">
+                                                                <input type="text" name="owner" placeholder="Owner" disabled value="<?= $profile->owner ?>">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group-container">
+                                                        <div class="form-group tooltip">
+                                                            <div class="tooltiptext">
+                                                                <span>Address</span>
+                                                            </div>
+                                                            <label for=""><span>Address</span></label>
+                                                           php <div class="error-container">
+                                                                <input type="text" name="address" placeholder="Address" disabled value="<?= $profile->address ?>">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group-container flex">
+                                                        <div class="form-group tooltip">
+                                                            <div class="tooltiptext">
+                                                                <span>Tel No</span>
+                                                            </div>
+                                                            <label for=""><span>Tel No</span></label>
+                                                            <div class="error-container">
+                                                                <input type="text" name="tel_no" placeholder="Tel No" disabled value="<?= $profile->tell_no ?>">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group tooltip">
+                                                            <div class="tooltiptext">
+                                                                <span>Email</span>
+                                                            </div>
+                                                            <label for=""><span>Email</span></label>
+                                                            <div class="error-container">
+                                                                <input type="text" name="email" placeholder="Email" disabled value="<?= $profile->email ?>">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group-container">
+                                                        <div class="form-group tooltip">
+                                                            <div class="tooltiptext">
+                                                                <span>TIN</span>
+                                                            </div>
+                                                            <label for=""><span>TIN</span></label>
+                                                            <div class="error-container">
+                                                                <input type="text" name="tin" placeholder="TIN" disabled>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            <div class="body-right">
+                                                <div class="form-group-container">
+                                                    <div class="form-group tooltip">
+                                                        <div class="tooltiptext">
+                                                            <span>Main Logo</span>
+                                                        </div>
+                                                        <label for=""><span>Main Logo</span></label>
+                                                        <div class="error-container">
+                                                            <div class="image-preview">
+                                                                <?php if(!empty($profile->main_logo)): ?>
+                                                                    <img src="/<?= $profile->main_logo ?>" alt="">
+                                                                <?php endif ?>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group-container">
+                                                    <div class="form-group tooltip">
+                                                        <div class="tooltiptext">
+                                                            <span>Company Logo</span>
+                                                        </div>
+                                                        <label for=""><span>Company Logo</span></label>
+                                                        <div class="error-container">
+                                                            <div class="image-preview">
+                                                                <?php if(!empty($profile->company_logo)): ?>
+                                                                    <img src="/<?= $profile->company_logo ?>" alt="">
+                                                                <?php endif ?>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="side-bar-content" data-content="authentication" data-picker="profile-picker">
+                                <div class="main-content">
+                                    <div class="head">
+                                        <h2>Authentication</h2>
+                                    </div>
+                                    <div class="body">
+                                        <div class="body-left-right side-bar-picker authentication-picker" data-id="authentication-picker">
+                                            <div class="body-left">
+                                                <div class="main-all-buttons-container">
+                                                    <div class="icon-button side-bar-button" data-id="no" data-picker="authentication-picker">
+                                                        <div class="icon"></div>
+                                                        <div class="text">
+                                                            <span>No Authentication <?= $record->auth_type == UserAuthenticationTypes::NO_AUTHENTICATION->value ? " (Current)" : '' ?> </span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="icon-button side-bar-button pin-authentication" data-id="pin" data-picker="authentication-picker">
+                                                        <div class="icon"></div>
+                                                        <div class="text">
+                                                            <span>PIN Authentication <?= $record->auth_type == UserAuthenticationTypes::PIN_AUTHENTICATION->value ? " (Current)" : '' ?></span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="icon-button side-bar-button uname-pass-authentication" data-id="uname-pass" data-picker="authentication-picker">
+                                                        <div class="icon"></div>
+                                                        <div class="text">
+                                                            <span>Username/Password Authentication<?= $record->auth_type == UserAuthenticationTypes::USERNAME_PASSWORD->value ? " (Current)" : '' ?></span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="icon-button side-bar-button email-authentication" data-id="email" data-picker="authentication-picker">
+                                                        <div class="icon"></div>
+                                                        <div class="text">
+                                                            <span>Email Authentication<?= $record->auth_type == UserAuthenticationTypes::EMAIL_AUTHENTICATION->value ? " (Current)" : '' ?></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="body-right">
+                                                <div class="side-bar-content" data-content="no" data-picker="authentication-picker">
+                                                    <div class="content-right">
+                                                        <div class="right-head">
+                                                            <h3>No Authentication</h3>
+                                                        </div>
+                                                        <div class="right-body">
+                                                            <div class="centralized">
+                                                                <div>
+                                                                    <p>By Disabling Authentication, you allow the system to be open widely on your computer</p>
+                                                                    <div class="icon-button disable-authentication">
+                                                                        <div class="icon"></div>
+                                                                        <div class="text">
+                                                                            <span>DISABLE AUTHENTICATION</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="side-bar-content" data-content="pin" data-picker="authentication-picker">
+                                                    <div class="content-right">
+                                                        <div class="right-head">
+                                                            <h3>PIN Authentication</h3>
+                                                        </div>
+                                                        <div class="right-body">
+                                                            <div class="centralized">
+                                                                <div>
+                                                                    <p>Setting a 6 Number Combination to authenticate on the system</p>
+                                                                    <div class="icon-button set-pin">
+                                                                        <div class="icon"></div>
+                                                                        <div class="text">
+                                                                            <span>SET PIN</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="side-bar-content" data-content="uname-pass" data-picker="authentication-picker">
+                                                    <div class="content-right">
+                                                        <div class="right-head">
+                                                            <h3>Username/Password Authentication</h3>
+                                                        </div>
+                                                        <div class="right-body">
+                                                            <div class="centralized">
+                                                                <div>
+                                                                    <p>Setting a Username and Password to authenticate on the system</p>
+                                                                    <div class="icon-button set-uname-pass">
+                                                                        <div class="icon"></div>
+                                                                        <div class="text">
+                                                                            <span>SET AUTHENTICATION</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="side-bar-content" data-content="email" data-picker="authentication-picker">
+                                                    <div class="content-right">
+                                                        <div class="right-head">
+                                                            <h3>Email Authentication</h3>
+                                                        </div>
+                                                        <div class="right-body">
+                                                            <div class="centralized">
+                                                                <div>
+                                                                    <p>Sending Email Authentication code to authenticate on the system. <br> ( It may requires Internet Connection )</p>
+                                                                    <div class="icon-button set-email">
+                                                                        <div class="icon"></div>
+                                                                        <div class="text">
+                                                                            <span>SET EMAIL AUTHENTICATION</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <?php include "public/views/pages/structures/html_pipes.phtml" ?>
+
+    <script type="module" src="/public/assets/scripts/pages/main/administrator/profile.js"></script>
+
+    <?php include "public/views/pages/structures/html_closing_parent.phtml" ?>
+
+    <?php include "public/views/pages/structures/html_body_closing.phtml" ?>

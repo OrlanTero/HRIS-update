@@ -1,0 +1,9 @@
+<?php
+global  $APPLICATION, $LOAN_PAYMENT_TABLE_HEADER_TEXT, $LOAN_PAYMENT_TABLE_BODY_KEY;
+
+$data = $_POST['id'];
+$control = $APPLICATION->FUNCTIONS->LOAN_PAYMENT_CONTROL;
+$RECORDS = $control->filterRecords(['employee_id' => $data],false);
+$ID = "payment_id";
+
+echo CreateTable($LOAN_PAYMENT_TABLE_HEADER_TEXT, $LOAN_PAYMENT_TABLE_BODY_KEY, $RECORDS, $ID, false, true, true, true, false);

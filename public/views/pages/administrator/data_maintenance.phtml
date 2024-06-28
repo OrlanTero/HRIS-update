@@ -1,0 +1,88 @@
+<?php
+
+global $APPLICATION, $ACTIVITY_LOG_HEADER_TEXT, $ACTIVITY_LOG_BODY_TEXT;
+global $ACTIVITY_CONTROL;
+
+$RECORDS = $ACTIVITY_CONTROL->getAllRecords(false);
+$ID = "log_id";
+$BUTTON = false;
+?>
+
+<?php include "public/views/pages/structures/html_headings.phtml" ?>
+
+<title>Settings</title>
+
+<?php include "public/views/pages/structures/html_heading_closing.phtml" ?>
+
+<?php include "public/views/pages/structures/html_body_open.phtml" ?>
+
+<?php include "public/views/pages/structures/html_opening_parent.phtml" ?>
+
+<div class="left-content">
+
+    <?php include "public/views/pages/structures/html_navbar.phtml" ?>
+
+</div>
+
+<div class="right-content">
+
+    <?php include "public/views/pages/structures/html_right_heading.phtml" ?>
+
+    <div class="right-body">
+        <div class="main-body-content-parent">
+            <div class="main-body-header">
+                <div class="header-nav">
+                    <div class="left">
+                        <div class="title">
+                            <h2>Data Maintenance</h2>
+                        </div>
+                    </div>
+                    <div class="right"></div>
+                </div>
+            </div>
+            <div class="main-body-body">
+                <div class="data-table-content">
+                    <div class="main-table-container table-component">
+                        <div class="main-table-header">
+                            <div class="table-header">
+                                <div class="left">
+                                    <div class="title">
+                                        <h2>Activity Logs</h2>
+                                    </div>
+                                </div>
+                                <div class="center">
+
+                                </div>
+                                <div class="right"></div>
+                            </div>
+                            <div class="table-buttons">
+                                <div class="left"></div>
+                                <div class="right">
+                                    <div class="icon-button table-button show-component" data-name="view-request">
+                                        <div class="icon">
+                                            <?= UseIcon("eye-thin") ?>
+                                        </div>
+                                        <div class="text">
+                                            <span>View</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="main-table-body main-table-requests">
+                            <?= CreateTable($ACTIVITY_LOG_HEADER_TEXT, $ACTIVITY_LOG_BODY_TEXT, $RECORDS, $ID, $BUTTON, true, true) ?>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <?php include "public/views/pages/structures/html_pipes.phtml" ?>
+
+    <script type="module" src="/public/assets/scripts/pages/main/administrator/data_maintenance.js"></script>
+
+    <?php include "public/views/pages/structures/html_closing_parent.phtml" ?>
+
+    <?php include "public/views/pages/structures/html_body_closing.phtml" ?>

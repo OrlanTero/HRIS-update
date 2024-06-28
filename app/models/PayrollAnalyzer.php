@@ -55,14 +55,14 @@ class PayrollAnalyzer
 
 //        RATESSSSSSSSSSSSSSSSSSSSSSSS
 
-        $_REGULAR_RATE = $client->regular_2;
-        $_REGULAR_OT_RATE = $client->overtime_2;
-        $_SPECIAL_HOLIDAY_RATE = $client->special_holiday;
-        $_SPECIAL_HOLIDAY_OT = $client->special_holiday_ot;
-        $_LEGAL_HOLIDAY_RATE = $client->legal_holiday;
-        $_LEGAL_HOLIDAY_OT_RATE = $client->legal_holiday_ot;
-        $_NIGHT_DIFF_RATE = $client->nightdiff;
-        $_REST_DAY_RATE = $client->restday;
+        $_REGULAR_RATE = $client->regular_2 ?? 0;
+        $_REGULAR_OT_RATE = $client->overtime_2 ?? 0;
+        $_SPECIAL_HOLIDAY_RATE = $client->special_holiday ?? 0;
+        $_SPECIAL_HOLIDAY_OT = $client->special_holiday_ot ?? 0 ;
+        $_LEGAL_HOLIDAY_RATE = $client->legal_holiday ?? 0 ;
+        $_LEGAL_HOLIDAY_OT_RATE = $client->legal_holiday_ot ?? 0;
+        $_NIGHT_DIFF_RATE = $client->nightdiff ?? 0;
+        $_REST_DAY_RATE = $client->restday ?? 0;
 
         // non attendance
         $_UNIFORM_RATE = $client->uniform ?? 0;
@@ -92,6 +92,8 @@ class PayrollAnalyzer
         $NHWSH = $this->computeTotalOf($attendance, \AttendanceTypes::SPECIAL_HOLIDAY->value);
         // special holiday ot hours
         $SHOT = $this->computeTotalOf($attendance, \AttendanceTypes::SPECIAL_HOLIDAY_OT->value);
+
+        $ALL_HOURS = $REGULAR + $OT + $R + $NHWLH + $NHWLHOT + $NHWSH + $SHOT;
 
         $OTR = ($OT * $_REGULAR_OT_RATE);
 
@@ -127,7 +129,7 @@ class PayrollAnalyzer
 
 //        // PART 2
         $_DEATH = 150;
-        $_PAGIBIG =  $GP * ($PAGIBIG_DEDUCTION_OBJ ? $PAGIBIG_DEDUCTION_OBJ->ee : 0);
+        $_PAGIBIG = ($PAGIBIG_DEDUCTION_OBJ ? $PAGIBIG_DEDUCTION_OBJ->ee : 0);
         $_PART2 = $_DEATH + $_PAGIBIG;
 
         $_NETPAY = $GP - ($_PART1 + $_PART2);
@@ -144,6 +146,8 @@ class PayrollAnalyzer
         $COMPUTATION->setSpecialHolidayOtHours($SHOT);
         $COMPUTATION->setLegalHolidayHours($NHWLH);
         $COMPUTATION->setLegalHolidayOtHours($NHWLHOT);
+
+        $COMPUTATION->setTotalHours($ALL_HOURS);
 
         // set rates
 

@@ -1,0 +1,156 @@
+<?php
+
+
+use Application\controllers\system\UserAuthenticationControl;
+use Application\controllers\system\UserProfileControl;
+
+$control = new UserAuthenticationControl();
+
+$authentication = $control->getCurrentUserAuthentication();
+
+$type = $authentication->auth_type;
+?>
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <link rel="stylesheet" href="/public/assets/styles/css/styles.css">
+</head>
+<body>
+    <div class="main-auth-container">
+        <div class="auth-container">
+            <div class="auth-header">
+                <h1>HRIS Management System</h1>
+                <p>Login Authentication</p>
+            </div>
+            <div class="auth-body">
+                <form action="" class="form-control">
+                    <?php if($type === UserAuthenticationTypes::USERNAME_PASSWORD->value): ?>
+                            <div class="form-group-container flex">
+                                <div class="form-group tooltip">
+                                    <div class="tooltiptext">
+                                        <span>Username</span>
+                                    </div>
+                                    <label for=""><span>Username</span></label>
+                                    <div class="error-container">
+                                        <input type="text" name="username" placeholder="Username" >
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group-container flex">
+                                <div class="form-group tooltip">
+                                    <div class="tooltiptext">
+                                        <span>Password</span>
+                                    </div>
+                                    <label for=""><span>Password</span></label>
+
+                                    <div class="error-container">
+                                        <input type="password" name="password" placeholder="Password">
+                                    </div>
+                                </div>
+                            </div>
+
+                        <div class="form-group-container submit-group right-side">
+                            <div class="form-group filled-green">
+                                <input type="submit" value="LOGIN">
+                            </div>
+                        </div>
+
+                    <?php elseif($type === UserAuthenticationTypes::PIN_AUTHENTICATION->value): ?>
+                            <div class="pin-code-container pin-code-editor">
+                                <input type="text" name="pin-code" hidden>
+                                <div class="pin-code-items">
+                                    <div class="pin-code-item">
+                                        <div class="text"  contenteditable="true">
+
+                                        </div>
+                                    </div>
+                                    <div class="pin-code-item">
+                                        <div class="text"  contenteditable="true">
+
+                                        </div>
+                                    </div>
+                                    <div class="pin-code-item">
+                                        <div class="text"  contenteditable="false">
+
+                                        </div>
+                                    </div>
+                                    <div class="pin-code-item">
+                                        <div class="text"  contenteditable="false">
+
+                                        </div>
+                                    </div>
+                                    <div class="pin-code-item">
+                                        <div class="text"  contenteditable="false">
+
+                                        </div>
+                                    </div>
+                                    <div class="pin-code-item">
+                                        <div class="text"  contenteditable="false">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                    <?php elseif($type === UserAuthenticationTypes::EMAIL_AUTHENTICATION->value): ?>
+                        <div class="form-group-container flex">
+                            <div class="form-group tooltip">
+                                <div class="tooltiptext">
+                                    <span>Req#</span>
+                                </div>
+                                <div class="error-container">
+                                    <input type="email" name="email_address" placeholder="Email Address" >
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group-container submit-group right-side">
+                            <div class="form-group filled-green">
+                                <input type="submit" value="CONTINUE">
+                            </div>
+                        </div>
+
+                    <?php elseif($type === UserAuthenticationTypes::NO_AUTHENTICATION->value): ?>
+                        <?php
+                            global $SESSION;
+
+                            $control = new UserProfileControl();
+
+                            $profile = $control->getProfile();
+
+                            $SESSION->apply($profile, true);
+                            $SESSION->start();
+
+                        ?>
+
+                        <a href="/" style="text-decoration: none;color:#050505">
+                            <div class="text-button filled-button filled-default" style="padding: 10px">
+                                <div class="text">
+                                    <span>CONTINUE</span>
+                                </div>
+                            </div>
+                        </a>
+                    <?php endif; ?>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <section id="big-pipes-container">
+        <section id="system-messages"></section>
+        <section id="system-notifications">
+            <section id="system-notification"></section>
+        </section>
+        <section id="system-popup"></section>
+    </section>
+</body>
+
+<script type="module" src="/public/assets/scripts/auth/login.js"> </script>
+</html>

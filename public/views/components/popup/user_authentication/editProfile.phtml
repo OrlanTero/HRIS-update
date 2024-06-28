@@ -1,0 +1,148 @@
+<?php
+
+global $APPLICATION;
+
+use Application\controllers\system\UserAuthenticationControl;
+use Application\controllers\system\UserProfileControl;
+
+$control = new UserAuthenticationControl();
+$profileControl = new UserProfileControl();
+
+$record = $control->getCurrentUserAuthentication();
+$profile = $profileControl->getProfile();
+
+?>
+<div class="main-popup-container">
+    <div class="popup-background"></div>
+    <div class="popup-content">
+        <div class="main-popup-content">
+            <div class="popup-top">
+                <div class="headline">
+                    <h1>Edit Profile</h1>
+                </div>
+                <div class="paragraph">
+                    <p>Update company information</p>
+                </div>
+
+                <div class="floating-button">
+                    <div class="close-popup popup-button">
+                        <?= UseIcon('close') ?>
+                    </div>
+                </div>
+            </div>
+            <form action="" class="form-control">
+                <div class="popup-bot">
+                    <div class="form-group-container flex">
+                        <div class="form-group tooltip">
+                            <div class="tooltiptext">
+                                <span>Branch</span>
+                            </div>
+                            <label for=""><span>Name</span></label>
+                            <div class="error-container">
+                                <input type="text" name="name" placeholder="Name" value="<?= $profile->name ?>">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group-container  flex">
+                        <div class="form-group tooltip">
+                            <div class="tooltiptext">
+                                <span>Description</span>
+                            </div>
+                            <label for=""><span>Description</span></label>
+                            <div class="error-container">
+                                <textarea name="description" id="" cols="30" rows="10" placeholder="Description"><?= $profile->description ?></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group-container flex">
+                        <div class="form-group tooltip">
+                            <div class="tooltiptext">
+                                <span>Owner</span>
+                            </div>
+                            <label for=""><span>Owner</span></label>
+                            <div class="error-container">
+                                <input type="text" name="owner" placeholder="Owner" value="<?= $profile->owner ?>">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group-container  flex">
+                        <div class="form-group tooltip">
+                            <div class="tooltiptext">
+                                <span>Address</span>
+                            </div>
+                            <label for=""><span>Address</span></label>
+                            <div class="error-container">
+                                <input type="text" name="address" placeholder="Address" value="<?= $profile->address ?>">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group-container flex">
+                        <div class="form-group tooltip">
+                            <div class="tooltiptext">
+                                <span>Tel No</span>
+                            </div>
+                            <label for=""><span>Tel No</span></label>
+                            <div class="error-container">
+                                <input type="text" name="tell_no" placeholder="Tel No" value="<?= $profile->tell_no ?>">
+                            </div>
+                        </div>
+                        <div class="form-group tooltip  flex">
+                            <div class="tooltiptext">
+                                <span>Email</span>
+                            </div>
+                            <label for=""><span>Email</span></label>
+                            <div class="error-container">
+                                <input type="text" name="email" placeholder="Email" value="<?= $profile->email ?>">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group-container  flex">
+                        <div class="form-group tooltip">
+                            <div class="tooltiptext">
+                                <span>TIN</span>
+                            </div>
+                            <label for=""><span>TIN</span></label>
+                            <div class="error-container">
+                                <input type="text" name="tin" placeholder="TIN" value="<?= $profile->tin ?>">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group-container  flex">
+                        <div class="form-group tooltip">
+                            <div class="tooltiptext">
+                                <span>Company Logo</span>
+                            </div>
+                            <label for=""><span>Company Logo</span></label>
+                            <div class="error-container">
+                                <input type="file" name="company_logo" placeholder="Company Logo">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group-container  flex">
+                        <div class="form-group tooltip">
+                            <div class="tooltiptext">
+                                <span>Main Logo</span>
+                            </div>
+                            <label for=""><span>Main Logo</span></label>
+                            <div class="error-container">
+                                <input type="file" name="main_logo" placeholder="Main Logo">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="popup-footer">
+                    <div class="form-group-container submit-group">
+                        <div class="form-group">
+                            <div class="link clear-form">
+                                <span>Clear</span>
+                            </div>
+                        </div>
+                        <div class="form-group filled-green">
+                            <input type="submit" value="Save">
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -80,7 +80,7 @@ function ViewRequest(id) {
             }
         })
 
-        const check = ListenToForm(form, function (data) {
+        ListenToForm(form, function (data) {
             data['active'] = GetComboValue(active).value;
             data['finished'] = GetComboValue(finished).value;
 
@@ -93,20 +93,19 @@ function ViewRequest(id) {
 
             delete data['branch'];
 
+            EditRecord("attendance_group", {id, data: JSON.stringify(data)}).then((res) => {
+                NewNotification({
+                    title:  res.code == 200 ? 'Success' :'Failed',
+                    message: res.code == 200 ? 'Successfully updated' : 'Task failed to perform!',
+                }, 3000,   res.code == 200 ? NotificationType.SUCCESS : NotificationType.ERROR)
+            })
+         
             Promise.all(TABLES.map((t) => t.saveToDatabase()))
                 .then(() => {
                     NewNotification({
                         title:  'Success',
                         message: 'Successfully updated',
                     }, 3000,   NotificationType.SUCCESS)
-                }).then(() =>  {
-                    return EditRecord("attendance_group", {id, data: JSON.stringify(data)});
-                })
-                .catch(() => {
-                    NewNotification({
-                        title:  'Failed',
-                        message: 'Task failed to perform!',
-                    }, 3000,   NotificationType.ERROR)
                 })
                 .finally(() => {
                 popup.Remove();

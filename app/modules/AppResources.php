@@ -115,8 +115,8 @@ $ATTENDANCE_GROUP_BODY_KEY = ["no", "period", "year", [
 
 // ALL FINANCIAL
 
-$PAYROLL_TABLE_HEADER_TEXT = ["No", "Name", "Days Worked","Rest Day", "BASIC PAY", "NSD", "NSD(BP)", "NHW(SH)", "SH(BP)", "NHW(SHOT)", "SHOT(BP)", "NHW(LH)","LH(BP)","NHW(LHOT)","LHOT(BP)","Gross Pay", "SSS", "PHIL", "INSURANCE", "P1", "Death", "Pag-Ibig", "P2","P3", "Net Pay"];
-$PAYROLL_TABLE_BODY_KEY = ["no", "name", "ndw","rest_day", "basic_pay", "nsd", "nsd_basic_pay", "nhw_sh", "sh_basic_pay", "nhw_shot", "shot_basic_pay","nhw_lh","lh_basic_pay","nhw_lhot","lhot_basic_pay", "gross_pay", "sss", "phil", "insurance", "part1", "death", "pagibig", "part2","others", "netpay"];
+$PAYROLL_TABLE_HEADER_TEXT = ["No", "Name", "Days Worked","Hours Worked","Rest Day", "BASIC PAY", "NSD", "NSD(BP)", "NHW(SH)", "SH(BP)", "NHW(SHOT)", "SHOT(BP)", "NHW(LH)","LH(BP)","NHW(LHOT)","LHOT(BP)","Gross Pay", "SSS", "PHIL", "INSURANCE", "P1", "Death", "Pag-Ibig", "P2","P3", "Net Pay"];
+$PAYROLL_TABLE_BODY_KEY = ["no", "name", "ndw","total_hours","rest_day", "basic_pay", "nsd", "nsd_basic_pay", "nhw_sh", "sh_basic_pay", "nhw_shot", "shot_basic_pay","nhw_lh","lh_basic_pay","nhw_lhot","lhot_basic_pay", "gross_pay", "sss", "phil", "insurance", "part1", "death", "pagibig", "part2","others", "netpay"];
 
 $REQUISITION_TABLE_HEADER_TEXT = ["No", "Req#", "Date", "Remarks","Status", "Amount"];
 $REQUISITION_TABLE_BODY_KEY = ["no", "req_id", "req_date", "remarks","status",  [

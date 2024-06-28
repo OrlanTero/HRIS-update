@@ -14,6 +14,8 @@ class PayrollComputation extends PayrollComputationAbstract
 
     public $payslip_rates;
 
+    public $total_hours;
+
     public function __construct($group, $employee)
     {
         $this->group = $group;
@@ -59,4 +61,22 @@ class PayrollComputation extends PayrollComputationAbstract
     {
         $this->payslip_rates = $RATES;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getTotalHours()
+    {
+        return $this->total_hours;
+    }
+
+    /**
+     * @param mixed $total_hours
+     */
+    public function setTotalHours($total_hours): void
+    {
+        $this->total_hours = $total_hours;
+    }
+
+
 }

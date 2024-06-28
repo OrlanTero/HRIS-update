@@ -3,7 +3,9 @@ import MenuBarListener from "../../../classes/components/MenuBarListener.js";
 import {TableListener} from "../../../classes/components/TableListener.js";
 import Popup from "../../../classes/components/Popup.js";
 import {ListenToForm, ListenToYearAndPeriodAsOptions, ManageComboBoxes} from "../../../modules/component/Tool.js";
-import {AddRecord, EditRecord} from "../../../modules/app/SystemFunctions.js";
+import {AddRecord, EditRecord, RemoveRecordsBatch} from "../../../modules/app/SystemFunctions.js";
+import AlertPopup, {AlertTypes} from "../../../classes/components/AlertPopup.js";
+import {NewNotification, NotificationType} from "../../../classes/components/NotificationPopup.js";
 
 function ManageSystemTypes() {
     const systemTypesTables = document.querySelectorAll(".system_type_table .main-table-container.table-component");
@@ -98,7 +100,31 @@ function ManageServiceDeductionTable() {
             }))
         }
 
-        const deleteR = (id) => {}
+        const deleteR = (ids) => {
+            const ppp = new AlertPopup({
+                primary: "Remove deployment?",
+                secondary: `${ids.length} selected`,
+                message: "You will remove this employee to selected client."
+            }, {
+                alert_type: AlertTypes.YES_NO,
+            });
+
+            ppp.AddListeners({
+                onYes: () => {
+                    RemoveRecordsBatch("service_deduction", {data: JSON.stringify(ids)}).then((res) => {
+                        NewNotification({
+                            title: res.code === 200 ? 'Success' : 'Failed',
+                            message: res.code === 200 ? 'Successfully Deleted Data' : 'Task Failed to perform!'
+                        }, 3000, res.code === 200 ? NotificationType.SUCCESS : NotificationType.ERROR)
+
+                        location.reload();
+                    })
+                }
+            })
+
+            ppp.Create().then(() => { ppp.Show() })
+
+        }
 
         const TABLE_LISTENER = new TableListener(table);
 
