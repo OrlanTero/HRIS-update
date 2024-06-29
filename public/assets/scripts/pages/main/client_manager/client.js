@@ -57,7 +57,7 @@ function ViewClientHolidays(id) {
         backgroundDismiss: false,
     });
 
-    popup.Create().then((pop) => {
+    function ManageTable() {
         const TABLE = popup.ELEMENT.querySelector(".main-table-container.table-component");
 
         if (!TABLE) return;
@@ -68,15 +68,14 @@ function ViewClientHolidays(id) {
 
         TABLE_LISTENER.addListeners({
             none: {
-                remove: ["delete-request", "view-request"],
+                remove: ["delete-request"],
                 view: ["add-request"],
             },
             select: {
-                view: ["delete-request", "view-request"],
+                view: ["delete-request"],
             },
             selects: {
                 view: ["delete-request"],
-                remove: ["view-request"]
             },
         })
 
@@ -88,30 +87,65 @@ function ViewClientHolidays(id) {
                     name: "add-request",
                     action: () => {
                         SelectHoliday(id).then((res = []) => {
-                        Promise.all( res.map(r => r.holiday_id).map(holiday => AddRecord("client_holidays", {data: JSON.stringify({
+                            Promise.all( res.map(r => r.holiday_id).map(holiday => AddRecord("client_holidays", {data: JSON.stringify({
                                     client_id: id,
                                     holiday_id: holiday
                                 })}))).then((res)=> {
-                                    console.log(res);
-                        });
+                                popup.Remove();
+                            });
                         })
                     },
                     single: true
                 },
                 {
-                    name: "view-request",
-                    action: ViewRequest,
-                    single: true
-                },
-                {
                     name: "delete-request",
-                    action: DeleteRequests,
+                    action: (ids) => {
+                        const __P = new AlertPopup({
+                            primary: "Remove Holidays?",
+                            secondary: `${ids.length} selected`,
+                            message: "You will remove this holiday to this client"
+                        }, {
+                            alert_type: AlertTypes.YES_NO,
+                        });
+
+                        __P.AddListeners({
+                            onYes: () => {
+                                RemoveRecordsBatch("client_holidays", {data: JSON.stringify(ids)}).then((res) => {
+                                    popup.Remove();
+                                })
+                            }
+                        })
+
+                        __P.Create().then(() => { __P.Show() })
+                    },
                     single: false
                 },
             ]);
         });
+    }
 
+    function Search(toSearch, filter) {
+        SearchRecords("client_holidays", toSearch, filter).then((HTML) => UpdateTable(HTML));
+    }
+
+    function UpdateTable(TABLE_HTML) {
+        const TABLE_BODY = popup.ELEMENT.querySelector(".main-table-body");
+
+        addHtml(TABLE_BODY, TABLE_HTML);
+
+        ManageTable();
+    }
+
+    popup.Create().then((pop) => {
         popup.Show();
+
+        ManageTable();
+
+        const searchEngine = popup.ELEMENT.querySelector(".search-engine input[name=search-records]");
+
+        searchEngine.addEventListener("input", () => {
+            Search(searchEngine.value, id)
+        })
     });
 }
 

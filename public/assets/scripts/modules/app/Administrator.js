@@ -555,7 +555,6 @@ export function SelectHoliday(id) {
             Promise.all(ids.map((id) => GetHoliday(id))).then((res)=> {
                 resolve(res);
             }).finally(() => popup.Remove());
-
         }
 
         function Search(toSearch, filter) {
@@ -614,7 +613,7 @@ export function SelectHoliday(id) {
             const searchEngine = popup.ELEMENT.querySelector(".search-engine input[name=search-records]");
 
             searchEngine.addEventListener("input", () => {
-                Search(searchEngine.value)
+                Search(searchEngine.value, id)
             })
         })
     })

@@ -101,7 +101,7 @@ include_once "controllers/system/RequisitionControl.php";
 include_once "controllers/system/DisbursementControl.php";
 include_once "controllers/system/AdjustmentControl.php";
 include_once "controllers/system/RequisitionInfoControl.php";
-include_once "controllers/system/ClientholidayControl.php";
+include_once "controllers/system/ClientHolidayControl.php";
 include_once "controllers/system/LoanControl.php";
 include_once "controllers/system/LoanPaymentControl.php";
 include_once "controllers/system/UserAuthenticationControl.php";

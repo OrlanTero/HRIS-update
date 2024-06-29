@@ -1,0 +1,23 @@
+<?php
+
+global $APPLICATION, $CLIENT_HOLIDAY_TABLE_HEADER_TEXT, $CLIENT_HOLIDAY_TABLE_BODY_KEY;
+
+$search = $_POST['search'];
+$filter = $_POST['filter'];
+
+$control = $APPLICATION->FUNCTIONS->CLIENT_HOLIDAY_CONTROL;
+$RECORDS = $control->searchRecords($search ,true, ['client_id' => $filter]);
+$ID = "client_holiday_id";
+
+$RECORDS = array_map(function ($record) {
+    return [
+        "client_holiday_id" => $record->client_holiday_id,
+        "holiday" => $record->holiday->holiday,
+        "date" => $record->holiday->holiday_date,
+    ];
+}, $RECORDS);
+
+$BUTTON = false;
+
+echo CreateTable($CLIENT_HOLIDAY_TABLE_HEADER_TEXT, $CLIENT_HOLIDAY_TABLE_BODY_KEY, $RECORDS, $ID, -1);
+
