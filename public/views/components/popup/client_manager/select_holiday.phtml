@@ -18,7 +18,7 @@ $selected = array_map(function ($record) {
 }, $selected);
 
 $RECORDS = array_filter($RECORDS, function ($record) use ($selected) {
-    return in_array($record['holiday_id'], $selected);
+    return !in_array($record['holiday_id'], $selected);
 });
 
 ?>

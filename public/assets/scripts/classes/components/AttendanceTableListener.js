@@ -506,6 +506,7 @@ export default class AttendanceTableListener {
 
                     const status = (!beforeVal && isNaN(val)) ? ItemValueStatus.FIXED : (!beforeVal && !isNaN(val)) ? (beforeVal == "0" && !isNaN(val)) ? ItemValueStatus.CHANGED : ItemValueStatus.ADDED : (beforeVal === val ? ItemValueStatus.FIXED : ItemValueStatus.CHANGED);
 
+                    // const status = beforeVal == val ? ItemValueStatus.FIXED : (!beforeVal && !isNaN(val) ? ItemValueStatus.ADDED : ((!isNaN(beforeVal) || beforeVal == "0") && !isNaN(val) ? ItemValueStatus.CHANGED : ItemValueStatus.FIXED));
                     return {
                         value: isNaN(val) ? null : val,
                         status: status,
@@ -526,7 +527,7 @@ export default class AttendanceTableListener {
 
     getChanges() {
         return this.values.after.map((item) => {
-            return item.items.filter((iii) => iii.value !== null || iii.status !== ItemValueStatus.FIXED).map((ii) => ii.db_value)
+            return item.items.filter((iii) => iii.status != ItemValueStatus.FIXED).map((ii) => ii.db_value)
         }).flat(1);
     }
 
@@ -539,8 +540,8 @@ export default class AttendanceTableListener {
             const changes = this.getChanges();
 
             if (changes.length) {
-
-                AddRecord("attendance_items", {client_id: client_id, data: JSON.stringify(changes)}).then((res) => {
+                AddRecord("attendance_items", {data: JSON.stringify(changes)}).then((res) => {
+                    console.log(res)
                     if (res.code === 200) {
                         resolve(res.message);
                     } else {

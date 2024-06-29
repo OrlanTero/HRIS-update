@@ -99,8 +99,8 @@ function ViewRequest(id) {
                     message: res.code == 200 ? 'Successfully updated' : 'Task failed to perform!',
                 }, 3000,   res.code == 200 ? NotificationType.SUCCESS : NotificationType.ERROR)
             })
-         
-            Promise.all(TABLES.map((t) => t.saveToDatabase(data['client_id'])))
+
+            Promise.all(TABLES.map((t) => t.saveToDatabase()))
                 .then(() => {
                     NewNotification({
                         title:  'Success',

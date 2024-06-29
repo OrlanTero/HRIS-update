@@ -104,7 +104,14 @@ function GetEnumValueOf($enum, $value)
 }
 
 function CreateEmployeeAttendanceTable($attendance_group, $employee) {
-    global $ATTENDANCE_TYPES;
+    global $ATTENDANCE_TYPES, $APPLICATION;
+
+
+    $holidayControl = $APPLICATION->FUNCTIONS->CLIENT_HOLIDAY_CONTROL;
+
+    $holidays = $holidayControl->filterRecords(['client_id' => $attendance_group->client_id], true);
+
+    $control = $APPLICATION->FUNCTIONS->ATTENDANCE_CONTROL;
 
     $days = CountDaysInPeriod($attendance_group->period);
 
@@ -136,6 +143,7 @@ function CreateEmployeeAttendanceTable($attendance_group, $employee) {
     $output .= '</thead><tbody class="body">';
 
     $ii = 0;
+
     foreach ($ATTENDANCE_TYPES as $ATTENDANCE_TYPE) {
         $output .= '<tr class="type-item attendance" data-type="'.$ii.'">';
 
@@ -144,9 +152,11 @@ function CreateEmployeeAttendanceTable($attendance_group, $employee) {
         for ($i = $days[0][0]; $i <= $days[0][1]; $i++) {
             $value = $attendance_group->getValueOfAttendanceIn($attendances, $i, $ii);
 
+            $isHoliday = $control->ISHolidayOnlyDate(GetMonthFromPeriod($attendance_group->period), $i, $attendance_group->year, $holidays);
+
             $output .= '<td class="sched-item day-item-td tooltip as-table" data-day="'.$i.'"  data-type="'.$ii.'" data-id="'. ($value ? $value->attendance_id : null) .'">
                 <span class="tooltiptext">
-                    <span>'. $ATTENDANCE_TYPE .' day '. $i.'</span>
+                    <span>'. $ATTENDANCE_TYPE .' day '. $i.' '. (($isHoliday != null) ? '( '.$isHoliday->holiday->holiday .' )' : "") .'</span>
                 </span>
                 <div class="text">'. ($value ? $value->hours : null) .'</div>
 </td>';
@@ -562,4 +572,33 @@ function GUIDV4()
     }
 
     return sprintf('%04X%04X-%04X-%04X-%04X-%04X%04X%04X', mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(16384, 20479), mt_rand(32768, 49151), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535));
+}
+
+function GetMonthFromPeriod($period)
+{
+    $months = array_map(function ($r) {
+        return strtolower($r);
+    }, array(
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July ',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December',
+    ));
+
+    $month = strtolower(explode(" ",$period)[0]);
+
+    return in_array($month, $months) ? $month : "December";
+}
+
+function ParsePeriodIntoDate($month, $day, $year) {
+    $date = $month . ' ' . $day .  " " . $year;
+    return date('Y-m-d', strtotime($date));
 }
