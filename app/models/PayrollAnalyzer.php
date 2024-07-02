@@ -41,6 +41,7 @@ class PayrollAnalyzer
 
         // CONTROLLERS
         $control = $APPLICATION->FUNCTIONS->SERVICE_DEDUCTION_CONTROL;
+        $adjustmentControl = $APPLICATION->FUNCTIONS->ADJUSTMENT_CONTROL;
 
         /**
          * @type Client $client
@@ -52,6 +53,10 @@ class PayrollAnalyzer
         $employee = $AI['employee'];
         $attendance = $AI['attendance'];
         $ndw = $AI['ndw'];
+
+        // $ADJUSTMENTS
+        $ADJUSTMENT = $adjustmentControl->filterRecords(['employee_id' => $employee->employee_id], false);
+        $TOTAL = count($ADJUSTMENT) > 0 ? array_sum(array_column($ADJUSTMENT, "amount")) : 0;
 
 //        RATESSSSSSSSSSSSSSSSSSSSSSSS
 
@@ -111,7 +116,7 @@ class PayrollAnalyzer
         $LHOTBP = $_LEGAL_HOLIDAY_OT_RATE * $NHWLHOT;
         
         // gross pay
-        $GP = $BP  + $NSDBP + $NHWSHBP + $SHOTBP + $NHWLHBP + $LHOTBP + $RR;
+        $GP = $BP  + $NSDBP + $NHWSHBP + $SHOTBP + $NHWLHBP + $LHOTBP + $RR + $_ALLOWANCE_RATE + $_HEAD_GUARD_ALLOWANCE_RATE + $TOTAL;
 
         $SSS_DEDUCTION_OBJ = $control->getDeductionOf($GP, \ServiceDeductionTypes::SSS->value);
         $PHIL_DEDUCTION_OBJ = $control->getDeductionOf($GP, \ServiceDeductionTypes::PHILHEALTH->value);
@@ -121,7 +126,7 @@ class PayrollAnalyzer
 
 //        // PART 1
         $_UNIFORM_DEDUCTION = max($_UNIFORM_RATE, 0);
-        $_OTHERS = $_UNIFORM_DEDUCTION + $_SEA_RATE + $_ALLOWANCE_RATE + $_HEAD_GUARD_ALLOWANCE_RATE + $_CTPA_RATE + $_COLA_RATE;
+        $_OTHERS = $_UNIFORM_DEDUCTION + $_SEA_RATE + $_CTPA_RATE + $_COLA_RATE;
         $_INSURANCE = 20;
         $_SSS = $SSS_DEDUCTION_OBJ ? $SSS_DEDUCTION_OBJ->ee : 0;
         $_PHIL = $PHIL_DEDUCTION_OBJ ? $PHIL_DEDUCTION_OBJ->ee : 0;
